@@ -24,6 +24,16 @@
                 <button class="btn btn-outline-success me-2" type="button">Login</button>
             </div>
         </nav>
+    <div>
+        <p>Main HTML page for NavBar and SideBar menu [other pages extend from this page]</p>
+        <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'FNR' %}">Find Nearest Restaurant</a></li>
+            <li><a href="{% url 'leaveReview' %}">Leave a Review</a></li>
+            <li><a href="{% url 'contact' %}">Contact Us</a></li>
+            <li><a href = "{% url 'faq' %}">FAQ</a></li>
+        </ul>
     </div>
     <div class = "collapse" id = "navMenu">
         <div>

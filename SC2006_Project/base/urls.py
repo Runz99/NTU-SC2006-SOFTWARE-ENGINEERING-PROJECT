@@ -6,4 +6,7 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('find-nearest-restaurant/', views.findNearestRestaurant, name='FNR'),
     path('leave-reviews/', views.leaveReviews, name='leaveReview'),
+    path('contact/', views.contact, name = 'contact'),
+    path('faq/', views.faq, name = 'faq')
+
 ]

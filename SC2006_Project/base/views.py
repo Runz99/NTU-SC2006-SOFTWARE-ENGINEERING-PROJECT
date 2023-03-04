@@ -22,3 +22,10 @@ def leaveReviews(request):
     context = {}
     return render(request, 'base/leave_reviews.html', context)
 
+def contact(request):
+    context = {}
+    return render(request, 'base/contact.html',context)
+
+def faq(request):
+    context = {}
+    return render(request, 'base/faq.html',context)
