@@ -31,8 +31,8 @@
                 <li><a href="{% url 'login' %}">Login</a></li>
                 <li><a href="{% url 'FNR' %}">Find Nearest Restaurant</a></li>
                 <li><a href="{% url 'leaveReview' %}">Leave a Review</a></li>
-                <li><a href="./contactUs.html">Contact Us</a></li>
-                <li><a href = "./FAQ.html">FAQ</a></li>
+                <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                <li><a href = "{% url 'faq' %}">FAQ</a></li>
             </ul>        
         </div>
     </div> 
