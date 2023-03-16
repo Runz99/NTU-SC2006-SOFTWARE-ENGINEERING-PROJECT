@@ -2,6 +2,14 @@
 
 {% block content %}
 
-<h2>THUS IS THE USER CREATION PAGE</h2> 
+<h3>Registration Page!</h3>
+<div>
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value="Register">
+    </form>
+    <div>Already a member? <a href="{% url 'login' %}">Log In Here!</a></div>
+</div> 
 
-{% endblock content%}
+{% endblock %}

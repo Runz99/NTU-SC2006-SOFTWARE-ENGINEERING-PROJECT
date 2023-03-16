@@ -2,6 +2,33 @@
 
 {% block content %}
 
-<h2>THIS IS THE LOGIN PAGE</h2> 
+<!-- <h2>THIS IS THE LOGIN PAGE</h2>  -->
+
+<div class="container">
+    <div class="wrapper">
+        <div class="title"><span>Login Form</span></div>
+        <form method="POST" action="">
+            {% csrf_token %}
+
+            {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{request.GET.next}}">
+            {% endif %}
+            <div class="row">
+                <!-- <i class="fas fa-user"></i> -->
+                <input type="text" name='username' placeholder="username" required>
+            </div>
+            <div class="row">
+                <!-- <i class="fas fa-lock"></i> -->
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <div class="pass"><a href="#">Forgot Password?</a></div>
+            <div>New to WGT? <a href="{% url 'create_user' %}">Sign up here!</a></div>
+            <div class="row button">
+                <input type="submit" value="Login">
+            </div>
+
+        </form>
+    </div>
+</div>
 
 {% endblock content%}
