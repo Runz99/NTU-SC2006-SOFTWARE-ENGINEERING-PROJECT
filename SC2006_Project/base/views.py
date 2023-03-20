@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.db import models
+from .models import restaurant
+from django.views.generic.list import ListView
 
 def home(request):
     context = {}
@@ -55,8 +58,14 @@ def createUser(request):
     return render(request, 'base/create_user.html', context)
 
 def findNearestRestaurant(request):
-    context = {}
+    res = restaurant.objects.all() #get all restaurant objects in database
+    results=None
+    if request.GET.get('search'): #get restaurant search
+        search = request.GET.get('search')
+        results = restaurant.objects.filter(name__contains=search)
+    context = {'res': res, 'results' : results}  #pass res into html
     return render(request, 'base/find_nearest_restaurant.html', context)
+
 
 def leaveReviews(request):
     context = {}
