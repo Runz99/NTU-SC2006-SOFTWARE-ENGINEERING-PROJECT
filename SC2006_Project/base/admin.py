@@ -1,6 +1,6 @@
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
-from .models import restaurant
+from .models import *
 
 # Register your models here.
 #class restaurantAdmin(ImportExportModelAdmin):
@@ -11,5 +11,9 @@ class restaurantAdmin(ImportExportModelAdmin,admin.ModelAdmin):
 
     search_fields = ('name','cuisine')
 
+@admin.register(review)
+class reviewAdmin(ImportExportModelAdmin,admin.ModelAdmin):
+    list_display = ['user_name', 'restaurant_name', 'address', 'restaurant_rating', 'restaurant_review']
+    search_fields = ('user_name', 'restaurant_name', 'restaurant_rating')
 
     
