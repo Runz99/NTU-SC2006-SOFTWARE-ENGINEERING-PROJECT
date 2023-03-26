@@ -21,6 +21,17 @@
 {% endfor %}
 </ul>
 
+<div>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <button type="submit">Click here to get your current location!</button>
+        <p>Your current coordinates: </p>
+        <ul>
+            <li>Lat: {{data.lat}}</li>
+            <li>Long: {{data.lon}}</li>
+        </ul>
+    </form>
+</div>
 <!-- <ul class = "allRestaurant"> show all restaurants
     <h1>All restaurants</h1>
     {% for rest in res %}
