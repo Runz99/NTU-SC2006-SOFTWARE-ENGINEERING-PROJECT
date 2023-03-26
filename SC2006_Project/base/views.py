@@ -8,6 +8,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db import models
 from .models import restaurant
 from django.views.generic.list import ListView
+import requests
+import json
 
 def home(request):
     context = {}
@@ -58,14 +60,26 @@ def createUser(request):
     return render(request, 'base/create_user.html', context)
 
 def findNearestRestaurant(request):
+    location_data = None
     res = restaurant.objects.all() #get all restaurant objects in database
     results=None
     if request.GET.get('search'): #get restaurant search
         search = request.GET.get('search')
         results = restaurant.objects.filter(name__contains=search)
-    context = {'res': res, 'results' : results}  #pass res into html
-    return render(request, 'base/find_nearest_restaurant.html', context)
 
+    if request.method == "POST":
+        ip = requests.get('https://api.ipify.org?format=json')
+        ip_data = json.loads(ip.text)
+        loc = requests.get("http://ip-api.com/json/"+ip_data["ip"])
+        loc_data = loc.text
+        location_data = json.loads(loc_data)
+        lats = location_data['lat'] #will be used later to calculate distances
+        longs = location_data['lon'] #will be used later to calculate distances
+    
+
+
+    context = {'res': res, 'results' : results, 'data': location_data}  #pass res into html
+    return render(request, 'base/find_nearest_restaurant.html', context)
 
 def leaveReviews(request):
     context = {}
