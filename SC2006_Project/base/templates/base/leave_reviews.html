@@ -4,4 +4,23 @@
 
 <h2>THIS IS THE "LEAVE A REVIEW" PAGE</h2> 
 
+<form method=POST action="">
+    {{ restaurantList }}
+</form>
+
+<table>
+
+    {% for item in query_results %}
+    <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.address }}</td>
+        <td>{{ item.restaurant_rating }}</td>
+        <td>{{ item.cuisine }}</td>
+        <td>{{ item.lat }}</td>
+        <td>{{ item.lon }}</td>
+        <td>{{ item.opening_hours }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
 {% endblock content%}

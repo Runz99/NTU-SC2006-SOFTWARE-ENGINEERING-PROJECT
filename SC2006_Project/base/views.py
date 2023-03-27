@@ -8,6 +8,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db import models
 from .models import restaurant
 from django.views.generic.list import ListView
+from django.views.generic import CreateView
+from .forms import *
+from .forms import restaurantDropForm
 import requests
 import json
 
@@ -76,14 +79,15 @@ def findNearestRestaurant(request):
         lats = location_data['lat'] #will be used later to calculate distances
         longs = location_data['lon'] #will be used later to calculate distances
     
-
-
     context = {'res': res, 'results' : results, 'data': location_data}  #pass res into html
     return render(request, 'base/find_nearest_restaurant.html', context)
 
 def leaveReviews(request):
-    context = {}
+    allRestaurants = restaurant.objects.all()
+    restaurantList = restaurantDropForm()
+    context = {'allRestaurants':allRestaurants, 'restaurantList':restaurantList}
     return render(request, 'base/leave_reviews.html', context)
+
 
 def contact(request):
     context = {}

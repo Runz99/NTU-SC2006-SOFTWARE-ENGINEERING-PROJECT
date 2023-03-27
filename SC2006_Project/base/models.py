@@ -12,7 +12,7 @@ class restaurant(models.Model):
     
     def __str__(self):
         return self.address
-    
+
 class review(models.Model):
     user_name = models.CharField(max_length = 100)
     restaurant_name = models.CharField(max_length = 100)
