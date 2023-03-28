@@ -13,7 +13,7 @@ class restaurantAdmin(ImportExportModelAdmin,admin.ModelAdmin):
 
 @admin.register(review)
 class reviewAdmin(ImportExportModelAdmin,admin.ModelAdmin):
-    list_display = ['user_name', 'restaurant_name', 'address', 'restaurant_rating', 'restaurant_review']
-    search_fields = ('user_name', 'restaurant_name', 'restaurant_rating')
+    list_display = ['user_name', 'address', 'restaurant_review','restaurant_rating']
+    search_fields = ('user_name', 'restaurant_rating')
 
     

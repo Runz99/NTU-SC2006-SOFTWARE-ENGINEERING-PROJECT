@@ -7,10 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.db import models
 from .models import restaurant
+from .models import review
 from django.views.generic.list import ListView
 from django.views.generic import CreateView
 from .forms import *
-from .forms import restaurantDropForm
+from .forms import reviewForm
 import requests
 import json
 
@@ -83,10 +84,24 @@ def findNearestRestaurant(request):
     return render(request, 'base/find_nearest_restaurant.html', context)
 
 def leaveReviews(request):
-    allRestaurants = restaurant.objects.all()
-    restaurantList = restaurantDropForm()
-    context = {'allRestaurants':allRestaurants, 'restaurantList':restaurantList}
-    return render(request, 'base/leave_reviews.html', context)
+    form = reviewForm(request.POST or None)
+    
+    if request.method == 'POST':
+        user_nameV = request.user.username
+        form = reviewForm(request.POST) 
+        if form.is_valid():
+            addressV = form.cleaned_data['address']
+            restaurant_reviewV = form.cleaned_data['restaurant_review']
+            restaurant_ratingV = form.cleaned_data['restaurant_rating']
+            userReview = review(user_name = user_nameV, address = addressV, restaurant_review = restaurant_reviewV, restaurant_rating = restaurant_ratingV)
+            userReview.save()
+            form = reviewForm()
+            messages.success(request, 'Review submission successful! Thank you!')
+            return render(request, 'base/leave_reviews.html', {'review' :form})
+        else:
+            form = reviewForm()  
+            return render(request, 'base/leave_reviews.html', {'review' :form})
+    return render(request, 'base/leave_reviews.html', {'review' :form})
 
 
 def contact(request):

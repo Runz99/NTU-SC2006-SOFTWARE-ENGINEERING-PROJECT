@@ -2,25 +2,25 @@
 
 {% block content %}
 
-<h2>THIS IS THE "LEAVE A REVIEW" PAGE</h2> 
+<h2>Got something to say? Leave a review!</h2> 
 
-<form method=POST action="">
-    {{ restaurantList }}
-</form>
+{% if user.is_authenticated %}
+Reviewing as: {{ user.username }}
+  <form method="post" name="review">
+      {% csrf_token %}
+      {{ review.as_p }}
+      <button type="submit">Submit
+      </button>
+  </form>
 
-<table>
-
-    {% for item in query_results %}
-    <tr>
-        <td>{{ item.name }}</td>
-        <td>{{ item.address }}</td>
-        <td>{{ item.restaurant_rating }}</td>
-        <td>{{ item.cuisine }}</td>
-        <td>{{ item.lat }}</td>
-        <td>{{ item.lon }}</td>
-        <td>{{ item.opening_hours }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
+  {% if messages %}
+  <ul class="messages">
+      {% for message in messages %}
+      <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+      {% endfor %}
+  </ul>
+  {% endif %}
+{% else %}
+  <p>You are not logged in</p>
+{% endif %}
 {% endblock content%}
