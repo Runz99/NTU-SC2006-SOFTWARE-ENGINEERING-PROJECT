@@ -2,6 +2,25 @@
 
 {% block content %}
 
-<h2>THIS IS THE "LEAVE A REVIEW" PAGE</h2> 
+<h2>Got something to say? Leave a review!</h2> 
 
+{% if user.is_authenticated %}
+Reviewing as: {{ user.username }}
+  <form method="post" name="review">
+      {% csrf_token %}
+      {{ review.as_p }}
+      <button type="submit">Submit
+      </button>
+  </form>
+
+  {% if messages %}
+  <ul class="messages">
+      {% for message in messages %}
+      <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+      {% endfor %}
+  </ul>
+  {% endif %}
+{% else %}
+  <p>You are not logged in</p>
+{% endif %}
 {% endblock content%}
