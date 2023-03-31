@@ -134,9 +134,12 @@ def leaveReviews(request):
     return render(request, 'base/leave_reviews.html', {'review' :form})
 
 #===========================================================================================================================================================
+
 def restaurant_info(request):
     context = {}
     return render(request, 'base/restaurant.html', context)
+
+#===========================================================================================================================================================
 
 def contact(request):
     context = {}
