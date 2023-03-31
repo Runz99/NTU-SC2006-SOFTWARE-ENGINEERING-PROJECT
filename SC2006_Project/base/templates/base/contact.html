@@ -2,14 +2,38 @@
 
 {% block content %}
 
+<style>
+    body {
+        background-color: #f8f8f8;
+    }
 
-    <body>
-        <h1>Contact Us</h1>
-        <div class = info>
-            <p>Have a pressing issue? Drop us a message!</p>
-            <p>Telephone : +65 xxxx xxxx</p>
-            <p>E-mail : xxx@xxx.com</p>
-        </div>
-    </body>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+    }
 
-{% endblock content%}
+    h1 {
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .info p {
+        font-size: 18px;
+        line-height: 1.5;
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+    <h1>Contact Us</h1>
+    <div class="info">
+        <p>Have a pressing issue? Drop us a message!</p>
+        <p>Telephone : +65 xxxx xxxx</p>
+        <p>E-mail : xxx@xxx.com</p>
+    </div>
+</div>
+
+{% endblock content %}

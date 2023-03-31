@@ -2,39 +2,108 @@
 
 {% block content %}
 
-<h2>Find Nearest Restaurants</h2> 
+<style>
+    body {
+        background-color: #f8f8f8;
+    }
 
-<form class="searchBar" method="GET" action="" >
-    <input class="searchBar" type="search" name="search"> 
-    <button class="searchBar" type="submit"> Search </button>
-</form>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+    }
 
-<ul class = "searchRestaurant">
-{% for result in results %}
-   <li>
-   {{result.name}}
-   {{result.address}}
-   {{result.cuisine}}
-    </li>
-{% empty %}
-   No results!
-{% endfor %}
-</ul>
+    h2 {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-<div>
-    <form action="" method="POST">
-        {% csrf_token %}
-        <button type="submit">Click here to get your current location!</button>
-        <p>Your current coordinates: </p>
-        <ul>
-            <li>Lat: {{data.lat}}</li>
-            <li>Long: {{data.lon}}</li>
-        </ul>
-        {% for list in lists %}
-            <ul>
-                <li><a href="{% url 'restaurant_info' %}">{{list.name}}</a></li>{{list.cuisine}}
-            </ul>
-        {% endfor %}
+    .searchBar {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    input[type="search"] {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 400px;
+        margin-right: 10px;
+    }
+
+    button[type="submit"] {
+        padding: 10px 20px;
+        background-color: #5dade2;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #3498db;
+    }
+
+    ul.searchRestaurant,
+    ul li {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    ul.searchRestaurant li {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container">
+    <h2>Find Nearest Restaurants</h2>
+
+    <form class="searchBar" method="GET" action="">
+        <input class="searchBar" type="search" name="search">
+        <button class="searchBar" type="submit">Search</button>
     </form>
+
+    <ul class="searchRestaurant">
+        {% for result in results %}
+        <li>
+            {{result.name}}
+            {{result.address}}
+            {{result.cuisine}}
+        </li>
+        {% empty %}
+        No results!
+        {% endfor %}
+    </ul>
+
+    <div>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <button type="submit">Click here to get your current location!</button>
+            <p>Your current coordinates: </p>
+            <ul>
+                <li>Lat: {{data.lat}}</li>
+                <li>Long: {{data.lon}}</li>
+            </ul>
+            {% for list in lists %}
+            <li>
+                <ul>
+                    {{list.name}},
+                    {{list.address}},
+                    {{list.cuisine}}
+                </ul>
+            </li>
+            {% endfor %}
+        </form>
+    </div>
 </div>
-{% endblock content%}
+{% endblock content %}
