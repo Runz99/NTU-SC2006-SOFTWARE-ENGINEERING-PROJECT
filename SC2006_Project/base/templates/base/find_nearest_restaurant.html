@@ -30,6 +30,15 @@
             <li>Lat: {{data.lat}}</li>
             <li>Long: {{data.lon}}</li>
         </ul>
+        {% for list in lists %}
+        <li>
+            <ul>
+                {{list.name}},
+                {{list.address}},
+                {{list.cuisine}}
+            </ul>
+        </li>    
+        {% endfor %}
     </form>
 </div>
 <!-- <ul class = "allRestaurant"> show all restaurants

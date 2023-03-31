@@ -14,10 +14,15 @@ from .forms import *
 from .forms import reviewForm
 import requests
 import json
+import math
+
+#==========================================================================================================================================================
 
 def home(request):
     context = {}
     return render(request, 'base/home.html', context)
+
+#==========================================================================================================================================================
 
 def loginPage(request):
     if request.method == 'POST':
@@ -63,8 +68,11 @@ def createUser(request):
     context = {'form':form}
     return render(request, 'base/create_user.html', context)
 
+#===========================================================================================================================================================
+
 def findNearestRestaurant(request):
     location_data = None
+    top_10_res = None
     res = restaurant.objects.all() #get all restaurant objects in database
     results=None
     if request.GET.get('search'): #get restaurant search
@@ -77,12 +85,37 @@ def findNearestRestaurant(request):
         loc = requests.get("http://ip-api.com/json/"+ip_data["ip"])
         loc_data = loc.text
         location_data = json.loads(loc_data)
-        lats = location_data['lat'] #will be used later to calculate distances
-        longs = location_data['lon'] #will be used later to calculate distances
+        user_lats = location_data['lat'] #will be used later to calculate distances
+        user_longs = location_data['lon'] #will be used later to calculate distances
+        print(type(user_lats))
+        # Calculate distance between user and each place
+        for eat in res:
+            print(type(eat.lat))
+            eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
+
+        # Sort places by distance
+        sorted_res = sorted(res, key=lambda eat: eat.distance)
+
+        top_10_res = sorted_res[:10]
+        
     
-    context = {'res': res, 'results' : results, 'data': location_data}  #pass res into html
+    context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res}  #pass res into html
     return render(request, 'base/find_nearest_restaurant.html', context)
 
+def calculate_distance(lat1, lon1, lat2, lon2):
+    R = 6371  # Radius of the earth in km
+    dLat = math.radians(lat2-lat1)
+    dLon = math.radians(lon2-lon1)
+    a = math.sin(dLat/2) * math.sin(dLat/2) + \
+        math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * \
+        math.sin(dLon/2) * math.sin(dLon/2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    distance = R * c  # Distance in km
+    return distance
+
+#===========================================================================================================================================================
+
+@login_required(login_url='login')
 def leaveReviews(request):
     form = reviewForm(request.POST or None)
     
@@ -103,6 +136,7 @@ def leaveReviews(request):
             return render(request, 'base/leave_reviews.html', {'review' :form})
     return render(request, 'base/leave_reviews.html', {'review' :form})
 
+#===========================================================================================================================================================
 
 def contact(request):
     context = {}
