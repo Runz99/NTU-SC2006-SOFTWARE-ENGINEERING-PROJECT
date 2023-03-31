@@ -87,12 +87,9 @@ def findNearestRestaurant(request):
         location_data = json.loads(loc_data)
         user_lats = location_data['lat'] #will be used later to calculate distances
         user_longs = location_data['lon'] #will be used later to calculate distances
-        print(type(user_lats))
         # Calculate distance between user and each place
         for eat in res:
-            print(type(eat.lat))
             eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
-
         # Sort places by distance
         sorted_res = sorted(res, key=lambda eat: eat.distance)
 
@@ -137,6 +134,9 @@ def leaveReviews(request):
     return render(request, 'base/leave_reviews.html', {'review' :form})
 
 #===========================================================================================================================================================
+def restaurant_info(request):
+    context = {}
+    return render(request, 'base/restaurant.html', context)
 
 def contact(request):
     context = {}

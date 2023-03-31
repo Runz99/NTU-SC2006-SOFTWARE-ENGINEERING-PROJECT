@@ -31,25 +31,10 @@
             <li>Long: {{data.lon}}</li>
         </ul>
         {% for list in lists %}
-        <li>
             <ul>
-                {{list.name}},
-                {{list.address}},
-                {{list.cuisine}}
+                <li><a href="{% url 'restaurant_info' %}">{{list.name}}</a></li>{{list.cuisine}}
             </ul>
-        </li>    
         {% endfor %}
     </form>
 </div>
-<!-- <ul class = "allRestaurant"> show all restaurants
-    <h1>All restaurants</h1>
-    {% for rest in res %}
-
-        <li>{{rest.name}}
-            {{rest.address}}
-            {{rest.cuisine}}
-        </li>
-
-    {% endfor %}
-</ul class = "allRestaurant"> -->
 {% endblock content%}
