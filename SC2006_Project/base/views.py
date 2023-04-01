@@ -136,7 +136,28 @@ def leaveReviews(request):
 #===========================================================================================================================================================
 
 def restaurant_info(request):
-    context = {}
+
+    #some code to retrieve what was clicked in find nearest restaurant
+    #maybe when that restaurant was clicked, it gets the info of what was clicked and sends it here? idk how that would look like tho
+
+    # name = request.GET.get('name')
+    # address = request.GET.get('address')
+    # lat = request.GET.get('lat')
+    # lon = request.GET.get('lon')
+
+    #below is just to test the other functions
+    name = "McDonald's"
+    address = "McDonald's - Woodlands Mart"
+    lat = "1.445"
+    lon = "103.79"
+    #code for showing the restaurant
+    chosenRestaurant = restaurant.objects.filter(name__contains = name, address__contains = address, lat__contains = lat, lon__contains = lon)
+    chosenID = chosenRestaurant.values_list('id', flat = True)
+    for i in chosenID:
+        chosenID = i #get the hidden id needed to access correct restaurant
+    restaurantReview = review.objects.filter(address = chosenID) #address is a hidden ID because restaurant is its foreign key
+    
+    context = {'chosenRestaurant' : chosenRestaurant, 'restaurantReview' : restaurantReview}
     return render(request, 'base/restaurant.html', context)
 
 #===========================================================================================================================================================

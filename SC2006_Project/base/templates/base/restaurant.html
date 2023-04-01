@@ -2,6 +2,25 @@
 
 {% block content %}
 
-<h2>THUS IS THE RESTAURANT PAGE</h2> 
+<h2>Time to Eat!</h2> 
+{% for restaurant in chosenRestaurant %}
+    
+    <p>Name: {{restaurant.name}}</p>
+    <p>Address: {{restaurant.address}}</p>
+    <p>Cuisine: {{restaurant.cuisine}}</p>
+    <p>Latitude: {{restaurant.lat}}</p>
+    <p>Longtitude: {{restaurant.lon}}</p>
+    <p>Opening Hours: {{restaurant.opening_hours}}</p>
+    
+{% endfor %}
 
-{% endblock content%}
+<h3>Hear what others have to say!</h3>
+
+{% for review in restaurantReview %}
+    <p>Username: {{review.user_name}}</p>
+    <p>Review: {{review.restaurant_review}}</p>
+    <p>Rating: {{review.restaurant_rating}}/5</p>
+    <p></p>
+{% endfor %}
+
+{% endblock content %}
