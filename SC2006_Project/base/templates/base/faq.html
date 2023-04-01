@@ -2,13 +2,40 @@
 
 {% block content %}
 
-<body>
-    <h1>Frequently Asked Questions (FAQ)</h1>
-    <p class = "question">1. What is WGT?</p>
-        <p class="answer">WGT is an application to help you find restaurants and parking space in one place!</p>
-    
-    <p class = "question">2. What do I need to create an account?</p>
-        <p class = "answer"> Just a valid email and a 8 character long password. These information will be encrypted and stored safely.</p>
-</body>
+<style>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+    }
 
-{% endblock content%}
+    h1 {
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    p.question {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    p.answer {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container">
+    <h1>Frequently Asked Questions (FAQ)</h1>
+    <p class="question">1. What is WGT?</p>
+    <p class="answer">WGT is an application to help you find restaurants and parking space in one place!</p>
+
+    <p class="question">2. What do I need to create an account?</p>
+    <p class="answer">Just a valid email and an 8 character long password. These information will be encrypted and stored safely.</p>
+</div>
+
+{% endblock content %}
