@@ -155,9 +155,13 @@ def restaurant_info(request):
     chosenID = chosenRestaurant.values_list('id', flat = True)
     for i in chosenID:
         chosenID = i #get the hidden id needed to access correct restaurant
+
     restaurantReview = review.objects.filter(address = chosenID) #address is a hidden ID because restaurant is its foreign key
-    
-    context = {'chosenRestaurant' : chosenRestaurant, 'restaurantReview' : restaurantReview}
+
+    Lati = chosenRestaurant.values_list('lat', flat = True)[0]
+    Longi = chosenRestaurant.values_list('lon', flat = True)[0]
+
+    context = {'chosenRestaurant' : chosenRestaurant, 'restaurantReview' : restaurantReview, 'lat' : Lati, 'lon' : Longi}
     return render(request, 'base/restaurant.html', context)
 
 #===========================================================================================================================================================

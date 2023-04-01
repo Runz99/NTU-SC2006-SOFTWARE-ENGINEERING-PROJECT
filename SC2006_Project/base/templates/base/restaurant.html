@@ -20,7 +20,23 @@
     <p>Username: {{review.user_name}}</p>
     <p>Review: {{review.restaurant_review}}</p>
     <p>Rating: {{review.restaurant_rating}}/5</p>
-    <p></p>
+    <p>------------------------------------</p>
 {% endfor %}
+
+
+<a href = "https://maps.google.com" id = aMap data-lat = '{{lat}}' data-lon = '{{lon}}'>Get directions here</a>
+
+<script>
+    coord = document.getElementById("aMap");
+    lat = coord.dataset.lat;
+    lon = coord.dataset.lon;
+    function getMapsUrl(){
+        link = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lon
+        return link;
+    }
+    document.getElementById("aMap").href = getMapsUrl();
+</script>
+
+
 
 {% endblock content %}
