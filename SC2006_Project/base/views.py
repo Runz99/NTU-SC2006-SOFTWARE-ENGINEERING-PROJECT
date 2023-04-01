@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from .forms import CustomUserCreationForm
 from django.db import models
 from .models import restaurant
 from .models import review
@@ -53,10 +54,10 @@ def logOut(request):
     return redirect('home')
 
 def createUser(request):
-    form = UserCreationForm()
+    form = CustomUserCreationForm()
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
@@ -110,6 +111,19 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     distance = R * c  # Distance in km
     return distance
 
+def set_selected_res(request, res_id):
+    selected_res = restaurant.objects.get(id=res_id)
+
+    request.session['selected_res'] = {
+        'id': selected_res.id,
+        'name': selected_res.name,
+        'lat': selected_res.lat,
+        'lon': selected_res.lon,
+        'cuisine': selected_res.cuisine
+    }
+
+    return redirect('restaurant_info')
+
 #===========================================================================================================================================================
 
 @login_required(login_url='login')
@@ -136,7 +150,10 @@ def leaveReviews(request):
 #===========================================================================================================================================================
 
 def restaurant_info(request):
-    context = {}
+
+    selected_res = request.session.get('selected_res')
+    #chosen_res = restaurant.objects.get(id = res_id)
+    context = {'selected_res': selected_res}
     return render(request, 'base/restaurant.html', context)
 
 #===========================================================================================================================================================
