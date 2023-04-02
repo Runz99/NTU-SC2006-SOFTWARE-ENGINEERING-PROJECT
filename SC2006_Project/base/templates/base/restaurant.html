@@ -2,17 +2,12 @@
 
 {% block content %}
 
-<h2>Time to Eat!</h2> 
-{% for restaurant in chosenRestaurant %}
-    
-    <p>Name: {{restaurant.name}}</p>
-    <p>Address: {{restaurant.address}}</p>
-    <p>Cuisine: {{restaurant.cuisine}}</p>
-    <p>Latitude: {{restaurant.lat}}</p>
-    <p>Longtitude: {{restaurant.lon}}</p>
-    <p>Opening Hours: {{restaurant.opening_hours}}</p>
-    
-{% endfor %}
+<h2>THIS IS THE RESTAURANT PAGE</h2> 
+
+<div>
+    Restaunt: {{selected_res.name}} <br>
+    Cuisine: {{selected_res.cuisine}}
+</div>
 
 <h3>Hear what others have to say!</h3>
 

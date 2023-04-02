@@ -91,7 +91,7 @@
             <div class="row">
                 <input type="password" name="password" placeholder="Password" required>
             </div>
-            <div class="pass"><a href="#">Forgot Password?</a></div>
+            <div class="pass"><a href="{% url 'password_reset' %}">Forgot Password?</a></div>
             <div>New to WGT? <a href="{% url 'create_user' %}">Sign up here!</a></div>
             <div class="row button">
                 <input type="submit" value="Login">
