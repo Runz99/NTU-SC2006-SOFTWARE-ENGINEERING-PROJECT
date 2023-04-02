@@ -76,7 +76,7 @@
     <ul class="searchRestaurant">
         {% for result in results %}
         <li>
-            <a href="{% url 'restaurant_info' %}">{{result.name}}</a>
+            <a href="{% url 'set_selected_res' result.id%}">{{result.name}}</a>
             {{result.cuisine}}
         </li>
         {% empty %}
@@ -87,12 +87,14 @@
     <div>
         <form action="" method="POST">
             {% csrf_token %}
-            <button type="submit">Click here to get your current location!</button>
-            <p>Your current coordinates: </p>
+            <!--<button type="submit">Click here to get your current location!</button> -->
+            {{form.as_p}}
+            <input type="submit">
+            <!-- <p>Your current coordinates: </p>
             <ul>
                 <li>Lat: {{data.lat}}</li>
                 <li>Long: {{data.lon}}</li>
-            </ul>
+            </ul> -->
             {% for list in lists %}
             <li>
                 <ul>
@@ -103,6 +105,42 @@
             </li>
             {% endfor %}
         </form>
+
+        <!-- <script>
+            function getCurrentLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        document.getElementById("id_latitude").value = position.coords.latitude;
+                        document.getElementById("id_longitude").value = position.coords.longitude;
+                    });
+                } else {
+                    alert("Geolocation is not supported by this browser.");
+                }
+            }
+        
+            var useCurrentLocationCheckbox = document.getElementById("id_use_current_location");
+            useCurrentLocationCheckbox.addEventListener("change", function() {
+                if (useCurrentLocationCheckbox.checked) {
+                    getCurrentLocation();
+                }
+            });
+        </script> -->
+
+        {% if get_current_location %}
+        <script>
+            function getCurrentLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        document.getElementById("id_user_lats").value = position.coords.latitude;
+                        document.getElementById("id_user_longs").value = position.coords.longitude;
+                    });
+                } else {
+                    alert("Geolocation is not supported by this browser.");
+                }
+            }
+            getCurrentLocation();
+        </script>
+        {% endif %}
     </div>
 </div>
 {% endblock content %}

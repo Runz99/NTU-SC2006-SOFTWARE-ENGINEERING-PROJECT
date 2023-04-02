@@ -13,6 +13,7 @@ from django.views.generic.list import ListView
 from django.views.generic import CreateView
 from .forms import *
 from .forms import reviewForm
+from .forms import CoordinatesForm
 import requests
 import json
 import math
@@ -73,21 +74,33 @@ def createUser(request):
 
 def findNearestRestaurant(request):
     location_data = None
+    form = None
+    user_lats = None
+    user_longs = None
     top_10_res = None
     res = restaurant.objects.all() #get all restaurant objects in database
     results=None
+    form = CoordinatesForm()
     if request.GET.get('search'): #get restaurant search
         search = request.GET.get('search')
         results = restaurant.objects.filter(name__contains=search)
 
     if request.method == "POST":
-        ip = requests.get('https://api.ipify.org?format=json')
-        ip_data = json.loads(ip.text)
-        loc = requests.get("http://ip-api.com/json/"+ip_data["ip"])
-        loc_data = loc.text
-        location_data = json.loads(loc_data)
-        user_lats = location_data['lat'] #will be used later to calculate distances
-        user_longs = location_data['lon'] #will be used later to calculate distances
+        # ip = requests.get('https://api.ipify.org?format=json')
+        # ip_data = json.loads(ip.text)
+        # loc = requests.get("http://ip-api.com/json/"+ip_data["ip"])
+        # loc_data = loc.text
+        # location_data = json.loads(loc_data)
+        form = CoordinatesForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['use_current_location']:
+                # current_location = getCurrentLocation()
+                # form.cleaned_data['user_lats'] = current_location['latitude']
+                # form.cleaned_data['user_longs'] = current_location['longitude']
+                return render(request, 'base/find_nearest_restaurant.html', {'form': form, 'get_current_location': True})
+            else:
+                user_lats = form.cleaned_data['user_lats'] #will be used later to calculate distances
+                user_longs = form.cleaned_data['user_longs'] #will be used later to calculate distances
         # Calculate distance between user and each place
         for eat in res:
             eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
@@ -97,7 +110,7 @@ def findNearestRestaurant(request):
         top_10_res = sorted_res[:10]
         
     
-    context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res}  #pass res into html
+    context = {'res': res, 'results' : results, 'form': form, 'lists':top_10_res}  #pass res into html
     return render(request, 'base/find_nearest_restaurant.html', context)
 
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -117,6 +130,7 @@ def set_selected_res(request, res_id):
     request.session['selected_res'] = {
         'id': selected_res.id,
         'name': selected_res.name,
+        'address': selected_res.address,
         'lat': selected_res.lat,
         'lon': selected_res.lon,
         'cuisine': selected_res.cuisine

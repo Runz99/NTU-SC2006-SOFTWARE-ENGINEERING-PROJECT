@@ -25,3 +25,8 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')    
+
+class CoordinatesForm(forms.Form):
+    user_lats = forms.FloatField()
+    user_longs = forms.FloatField()
+    use_current_location = forms.BooleanField(required=False, label='use_current_location')
