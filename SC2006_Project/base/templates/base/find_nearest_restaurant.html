@@ -76,7 +76,8 @@
     <ul class="searchRestaurant">
         {% for result in results %}
         <li>
-            <a href="{% url 'restaurant_info' %}">{{result.name}}</a>
+            <a href="{% url 'set_selected_res' result.id%}">{{result.name}}</a>
+            {{result.address}}
             {{result.cuisine}}
         </li>
         {% empty %}

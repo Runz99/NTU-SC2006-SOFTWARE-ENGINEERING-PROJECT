@@ -117,6 +117,7 @@ def set_selected_res(request, res_id):
     request.session['selected_res'] = {
         'id': selected_res.id,
         'name': selected_res.name,
+        'address': selected_res.address,
         'lat': selected_res.lat,
         'lon': selected_res.lon,
         'cuisine': selected_res.cuisine
