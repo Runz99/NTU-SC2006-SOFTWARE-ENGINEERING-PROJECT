@@ -2,10 +2,11 @@
 
 {% block content %}
 
-<h2>THIS IS THE RESTAURANT PAGE</h2> 
+<h2>Ready to eat?</h2> 
 
 <div>
-    Restaunt: {{selected_res.name}} <br>
+    Restaurant: {{selected_res.name}} <br>
+    Address: {{selected_res.address}} <br>
     Cuisine: {{selected_res.cuisine}}
 </div>
 
@@ -19,7 +20,7 @@
 {% endfor %}
 
 
-<a href = "https://maps.google.com" id = aMap data-lat = '{{lat}}' data-lon = '{{lon}}'>Get directions here</a>
+<a href = "https://maps.google.com" id = aMap data-lat = '{{selected_res.lat}}' data-lon = '{{selected_res.lon}}'>Get directions here</a>
 
 <script>
     coord = document.getElementById("aMap");
