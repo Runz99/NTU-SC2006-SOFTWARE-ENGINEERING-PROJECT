@@ -155,8 +155,10 @@ def restaurant_info(request):
     selected_res = request.session.get('selected_res')
     #chosen_res = restaurant.objects.get(id = res_id)
     restaurantReview = review.objects.filter(address = selected_res.get('id'))
+
     context = {'selected_res': selected_res, 'restaurantReview' : restaurantReview}
     return render(request, 'base/restaurant.html', context)
+
 
 #===========================================================================================================================================================
 
