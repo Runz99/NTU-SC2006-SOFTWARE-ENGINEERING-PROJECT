@@ -81,13 +81,8 @@ def findNearestRestaurant(request):
         results = restaurant.objects.filter(name__contains=search)
 
     if request.method == "POST":
-        ip = requests.get('https://api.ipify.org?format=json')
-        ip_data = json.loads(ip.text)
-        loc = requests.get("http://ip-api.com/json/"+ip_data["ip"])
-        loc_data = loc.text
-        location_data = json.loads(loc_data)
-        user_lats = location_data['lat'] #will be used later to calculate distances
-        user_longs = location_data['lon'] #will be used later to calculate distances
+        user_lats = float(request.POST.get('latitude'))
+        user_longs = float(request.POST.get('longitude')) #will be used later to calculate distances
         # Calculate distance between user and each place
         for eat in res:
             eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
