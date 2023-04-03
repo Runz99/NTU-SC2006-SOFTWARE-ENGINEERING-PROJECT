@@ -86,24 +86,49 @@
     </ul>
 
     <div>
-        <form action="" method="POST">
+        <form id = "locationForm" action= "" method="POST">
             {% csrf_token %}
-            <button type="submit">Click here to get your current location!</button>
-            <p>Your current coordinates: </p>
-            <ul>
-                <li>Lat: {{data.lat}}</li>
-                <li>Long: {{data.lon}}</li>
-            </ul>
-            {% for list in lists %}
-            <li>
-                <ul>
-                    <a href="{% url 'set_selected_res' list.id %}">{{list.name}}</a>
-                    {{list.address}}
-                    {{list.cuisine}}
-                </ul>
-            </li>
-            {% endfor %}
+            <input type="hidden" id="latitudeInput" name="latitude">
+            <input type="hidden" id="longitudeInput" name="longitude">
+            <button id = "getLocationBtn" type="submit">Click here to get your current location!</button>
         </form>
+        <p>Your current coordinates: </p>
+        <ul>
+            <li>Lat: {{user_lats}}</li>
+            <li>Long: {{user_longs}}</li>
+        </ul>
+        {% for list in lists %}
+        <li>
+            <ul>
+                <a href="{% url 'set_selected_res' list.id %}">{{list.name}}</a>
+                {{list.address}}
+                {{list.cuisine}}
+            </ul>
+        </li>
+        {% endfor %}
     </div>
 </div>
+
+
+<script>
+    // Get the form and button elements
+const locationForm = document.getElementById('locationForm');
+const getLocationBtn = document.getElementById('getLocationBtn');
+
+// Listen for the button click event
+getLocationBtn.addEventListener('click', function() {
+  // Get the user's geolocation
+  navigator.geolocation.getCurrentPosition(function(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    // Set the latitude and longitude values in the hidden form inputs
+    document.getElementById('latitudeInput').value = latitude;
+    document.getElementById('longitudeInput').value = longitude;
+
+    // Submit the form
+    locationForm.submit();
+  });
+});
+</script>
 {% endblock content %}
