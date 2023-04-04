@@ -16,7 +16,10 @@ from .forms import reviewForm
 import requests
 import json
 import math
+import urllib.parse
+import os
 
+API_KEY = os.environ.get('API_KEY')
 #==========================================================================================================================================================
 
 def home(request):
@@ -76,9 +79,29 @@ def findNearestRestaurant(request):
     top_10_res = None
     res = restaurant.objects.all() #get all restaurant objects in database
     results=None
+    user_lats = None
+    user_longs = None
+
     if request.GET.get('search'): #get restaurant search
         search = request.GET.get('search')
         results = restaurant.objects.filter(name__contains=search)
+
+    if request.GET.get('userAddress'):
+        userAddress = request.GET.get('userAddress')
+        #calls google API to get user's location:
+        encUA = urllib.parse.quote(userAddress)
+        result = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address="+encUA+"&key="+API_KEY)
+        location_data = result.json()
+        user_lats = location_data['results'][0]['geometry']['location']['lat']
+        user_longs = location_data['results'][0]['geometry']['location']['lng'] 
+        
+        # Calculate distance between user and each place
+        for eat in res:
+            eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
+        # Sort places by distance
+        sorted_res = sorted(res, key=lambda eat: eat.distance)
+        top_10_res = sorted_res[:10]
+
 
     if request.method == "POST":
         user_lats = float(request.POST.get('latitude'))
@@ -88,12 +111,11 @@ def findNearestRestaurant(request):
             eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
         # Sort places by distance
         sorted_res = sorted(res, key=lambda eat: eat.distance)
-
         top_10_res = sorted_res[:10]
         
-    
     context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res}  #pass res into html
     return render(request, 'base/find_nearest_restaurant.html', context)
+
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371  # Radius of the earth in km
