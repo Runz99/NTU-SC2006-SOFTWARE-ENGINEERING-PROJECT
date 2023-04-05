@@ -19,5 +19,4 @@ urlpatterns = [
     path('set-selected-place/<int:res_id>/', views.set_selected_res, name='set_selected_res'),
     path('restaurant-info', restaurant_info, name='restaurant_info'),
     #path('restaurant-info/<int:place_id>/', restaurant_info, name='restaurant_info'),
-
 ]

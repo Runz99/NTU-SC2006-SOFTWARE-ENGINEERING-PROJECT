@@ -13,11 +13,13 @@ from django.views.generic.list import ListView
 from django.views.generic import CreateView
 from .forms import *
 from .forms import reviewForm
-from .forms import CoordinatesForm
 import requests
 import json
 import math
+import urllib.parse
+import os
 
+API_KEY = os.environ.get('API_KEY')
 #==========================================================================================================================================================
 
 def home(request):
@@ -74,44 +76,46 @@ def createUser(request):
 
 def findNearestRestaurant(request):
     location_data = None
-    form = None
-    user_lats = None
-    user_longs = None
     top_10_res = None
     res = restaurant.objects.all() #get all restaurant objects in database
     results=None
-    form = CoordinatesForm()
+    user_lats = None
+    user_longs = None
+
     if request.GET.get('search'): #get restaurant search
         search = request.GET.get('search')
         results = restaurant.objects.filter(name__contains=search)
 
-    if request.method == "POST":
-        # ip = requests.get('https://api.ipify.org?format=json')
-        # ip_data = json.loads(ip.text)
-        # loc = requests.get("http://ip-api.com/json/"+ip_data["ip"])
-        # loc_data = loc.text
-        # location_data = json.loads(loc_data)
-        form = CoordinatesForm(request.POST)
-        if form.is_valid():
-            if form.cleaned_data['use_current_location']:
-                # current_location = getCurrentLocation()
-                # form.cleaned_data['user_lats'] = current_location['latitude']
-                # form.cleaned_data['user_longs'] = current_location['longitude']
-                return render(request, 'base/find_nearest_restaurant.html', {'form': form, 'get_current_location': True})
-            else:
-                user_lats = form.cleaned_data['user_lats'] #will be used later to calculate distances
-                user_longs = form.cleaned_data['user_longs'] #will be used later to calculate distances
+    if request.GET.get('userAddress'):
+        userAddress = request.GET.get('userAddress')
+        #calls google API to get user's location:
+        encUA = urllib.parse.quote(userAddress)
+        result = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address="+encUA+"&key="+API_KEY)
+        location_data = result.json()
+        user_lats = location_data['results'][0]['geometry']['location']['lat']
+        user_longs = location_data['results'][0]['geometry']['location']['lng'] 
+        
         # Calculate distance between user and each place
         for eat in res:
             eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
         # Sort places by distance
         sorted_res = sorted(res, key=lambda eat: eat.distance)
+        top_10_res = sorted_res[:10]
 
+
+    if request.method == "POST":
+        user_lats = float(request.POST.get('latitude'))
+        user_longs = float(request.POST.get('longitude')) #will be used later to calculate distances
+        # Calculate distance between user and each place
+        for eat in res:
+            eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
+        # Sort places by distance
+        sorted_res = sorted(res, key=lambda eat: eat.distance)
         top_10_res = sorted_res[:10]
         
-    
-    context = {'res': res, 'results' : results, 'form': form, 'lists':top_10_res}  #pass res into html
+    context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res}  #pass res into html
     return render(request, 'base/find_nearest_restaurant.html', context)
+
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371  # Radius of the earth in km
