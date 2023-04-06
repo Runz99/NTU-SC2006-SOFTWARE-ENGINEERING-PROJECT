@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.conf import settings
 from .forms import CustomUserCreationForm
 from django.db import models
 from .models import restaurant
@@ -14,12 +15,13 @@ from django.views.generic import CreateView
 from .forms import *
 from .forms import reviewForm
 import requests
+import googlemaps
 import json
 import math
 import urllib.parse
 import os
 
-API_KEY = os.environ.get('API_KEY')
+#API_KEY = os.environ.get('API_KEY')
 #==========================================================================================================================================================
 
 def home(request):
@@ -90,6 +92,7 @@ def findNearestRestaurant(request):
         userAddress = request.GET.get('userAddress')
         #calls google API to get user's location:
         encUA = urllib.parse.quote(userAddress)
+        API_KEY = settings.GOOGLE_API_KEY
         result = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address="+encUA+"&key="+API_KEY)
         location_data = result.json()
         user_lats = location_data['results'][0]['geometry']['location']['lat']
