@@ -134,3 +134,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sdjango643@gmail.com'
 EMAIL_HOST_PASSWORD = 'bahwkvlbuffhmkac'
 #DEFAULT_FROM_EMAIL = 'password1@'
+
+GOOGLE_API_KEY = ''
