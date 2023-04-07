@@ -171,7 +171,13 @@ def leaveReviews(request):
 #===========================================================================================================================================================
 
 def restaurant_info(request):
+    '''
+    Gets information of restaurant that user clicked on and renders it in restaurant.html
 
+    param request: Contains information of restaurant clicked
+    returns: renders restaurant.html with specified restaurant's info and restaurant's reviews
+
+    '''
     selected_res = request.session.get('selected_res')
     #chosen_res = restaurant.objects.get(id = res_id)
     restaurantReview = review.objects.filter(address = selected_res.get('id'))
@@ -183,9 +189,23 @@ def restaurant_info(request):
 #===========================================================================================================================================================
 
 def contact(request):
+    '''
+    Renders contact.html when contact is clicked
+
+    param request: Passes state through system
+    returns: renders contact.html
+
+    '''
     context = {}
     return render(request, 'base/contact.html',context)
 
 def faq(request):
+    '''
+    Renders faq.html when contact is clicked
+
+    param request: Passes state through system
+    returns: renders faq.html
+
+    '''
     context = {}
     return render(request, 'base/faq.html',context)
