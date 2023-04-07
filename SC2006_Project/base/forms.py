@@ -9,7 +9,12 @@ ratingChoice = [('1','1'),('2','2'),('3','3'),('4','4'),('5','5'),]
 
 
 class reviewForm(forms.Form):
-    #user_name = forms.CharField(max_length = 100)
+    '''
+    Review form to store and access user created reviews in database
+
+    param models.Model: Access django's form functionalities
+
+    '''
     address = forms.ModelChoiceField(
             queryset=restaurant.objects.all().order_by("address"),
             label = "Restaurant Name"
