@@ -76,17 +76,57 @@ def createUser(request):
 
 #===========================================================================================================================================================
 
-def findNearestRestaurant(request):
-    location_data = None
-    top_10_res = None
+def searchRestaurant(request):
+    #location_data = None
+    #top_10_res = None
     res = restaurant.objects.all() #get all restaurant objects in database
     results=None
-    user_lats = None
-    user_longs = None
+    #user_lats = None
+    #user_longs = None
 
     if request.GET.get('search'): #get restaurant search
         search = request.GET.get('search')
         results = restaurant.objects.filter(name__contains=search)
+
+    # if request.GET.get('userAddress'):
+    #     userAddress = request.GET.get('userAddress')
+    #     #calls google API to get user's location:
+    #     encUA = urllib.parse.quote(userAddress)
+    #     API_KEY = settings.GOOGLE_API_KEY
+    #     result = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address="+encUA+"&key="+API_KEY)
+    #     location_data = result.json()
+    #     user_lats = location_data['results'][0]['geometry']['location']['lat']
+    #     user_longs = location_data['results'][0]['geometry']['location']['lng'] 
+        
+    #     # Calculate distance between user and each place
+    #     for eat in res:
+    #         eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
+    #     # Sort places by distance
+    #     sorted_res = sorted(res, key=lambda eat: eat.distance)
+    #     top_10_res = sorted_res[:10]
+
+
+    # if request.method == "POST":
+    #     user_lats = float(request.POST.get('latitude'))
+    #     user_longs = float(request.POST.get('longitude')) #will be used later to calculate distances
+    #     # Calculate distance between user and each place
+    #     for eat in res:
+    #         eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
+    #     # Sort places by distance
+    #     sorted_res = sorted(res, key=lambda eat: eat.distance)
+    #     top_10_res = sorted_res[:10]
+        
+    # context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res}  #pass res into html
+    context = {'res': res, 'results' : results}  #pass res into html
+    return render(request, 'base/search_restaurant.html', context)
+
+def find_nearest_restaurant_1(request):
+    location_data = None
+    top_10_res = None
+    res = restaurant.objects.all() #get all restaurant objects in database
+    #results = restaurant.objects.filter(name__contains=search)
+    user_lats = None
+    user_longs = None
 
     if request.GET.get('userAddress'):
         userAddress = request.GET.get('userAddress')
@@ -97,29 +137,55 @@ def findNearestRestaurant(request):
         location_data = result.json()
         user_lats = location_data['results'][0]['geometry']['location']['lat']
         user_longs = location_data['results'][0]['geometry']['location']['lng'] 
-        
-        # Calculate distance between user and each place
-        for eat in res:
-            eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
-        # Sort places by distance
-        sorted_res = sorted(res, key=lambda eat: eat.distance)
-        top_10_res = sorted_res[:10]
+
+        request.session['user_lats'] = user_lats
+        request.session['user_longs'] = user_longs
+        return redirect('find_nearest_restaurant_2')
 
 
     if request.method == "POST":
         user_lats = float(request.POST.get('latitude'))
         user_longs = float(request.POST.get('longitude')) #will be used later to calculate distances
-        # Calculate distance between user and each place
-        for eat in res:
-            eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
+
+        request.session['user_lats'] = user_lats
+        request.session['user_longs'] = user_longs
+        return redirect('find_nearest_restaurant_2')
+    
+    context = {'res': res,'data': location_data}  #pass res into html
+    return render(request, 'base/find_nearest_restaurant_1.html', context)
+
+def find_nearest_restaurant_3(request):
+    res = restaurant.objects.all()
+    user_lats = request.session.get('user_lats')
+    user_longs = request.session.get('user_longs')
+    top_10_res = None
+
+    for eat in res:
+        eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
         # Sort places by distance
-        sorted_res = sorted(res, key=lambda eat: eat.distance)
-        top_10_res = sorted_res[:10]
-        
-    context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res}  #pass res into html
-    return render(request, 'base/find_nearest_restaurant.html', context)
+    sorted_res = sorted(res, key=lambda eat: eat.distance)
+    top_10_res = sorted_res[:10]
+    
+    #context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res} 
+    context = {'res': res, 'lists':top_10_res}  #pass res into html
+    return render(request, 'base/find_nearest_restaurant_3.html', context)
 
+def find_nearest_restaurant_2(request):
+    #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
+    if request.method == "POST":
+        #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
+        selected_choice = request.POST.get('cuisine_dropdown')
+        if selected_choice:
+            request.session['selected_choice'] = selected_choice
+        #request.session['selected_choice'] = selected_choice
+        return redirect('find_nearest_restaurant_3')
 
+    else:
+        cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
+        print(cuisine_choices)
+        context = {'cuisine_choice':cuisine_choices}
+        return render(request, 'base/find_nearest_restaurant_2.html', context)
+    
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371  # Radius of the earth in km
     dLat = math.radians(lat2-lat1)

@@ -8,7 +8,7 @@ urlpatterns = [
     path('login/', views.loginPage, name='login'),
     path('logout/', views.logOut, name='logout'),
     path('create-user/', views.createUser, name='create_user'),
-    path('find-nearest-restaurant/', views.findNearestRestaurant, name='FNR'),
+    path('search-restaurant/', views.searchRestaurant, name='search_restaurant'),
     path('leave-reviews/', views.leaveReviews, name='leaveReview'),
     path('contact/', views.contact, name = 'contact'),
     path('faq/', views.faq, name = 'faq'),
@@ -18,5 +18,8 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('set-selected-place/<int:res_id>/', views.set_selected_res, name='set_selected_res'),
     path('restaurant-info', restaurant_info, name='restaurant_info'),
+    path('find-nearest-restaurant', views.find_nearest_restaurant_1, name='find_nearest_restaurant_1'),
+    path('find-nearest-restaurant-2', views.find_nearest_restaurant_2, name='find_nearest_restaurant_2'),
+    path('find-nearest-restaurant-3', views.find_nearest_restaurant_3, name='find_nearest_restaurant_3'),
     #path('restaurant-info/<int:place_id>/', restaurant_info, name='restaurant_info'),
 ]

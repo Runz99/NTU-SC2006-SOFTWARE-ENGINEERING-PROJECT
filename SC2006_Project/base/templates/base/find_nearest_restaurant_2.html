@@ -1,0 +1,26 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <label for="cuisine_dropdown">Choose a cuisine...</label>
+    <select name="cuisine_dropdown" id="cuisine_dropdown">
+        {% for cuisine in cuisine_choices %}
+            <option value="{{cuisine}}">{{cuisine}}</option>
+        {% endfor %}
+    </select>
+    <button type="Submit">Submit</button>
+</form>
+
+<style>
+    /* Style the dropdown menu */
+    #cuisine_dropdown {
+        width: 200px;
+        padding: 5px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+</style>
+{% endblock content %}
