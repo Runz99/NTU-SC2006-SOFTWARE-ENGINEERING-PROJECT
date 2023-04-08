@@ -7,7 +7,6 @@
         {% csrf_token %}
         <input type="hidden" id="latitudeInput" name="latitude">
         <input type="hidden" id="longitudeInput" name="longitude">
-        <!-- <button id = "getLocationBtn" type="submit">Click here to get your current location!</button> -->
         <button type="button" onclick="getLocation()">Share Location</button>
     </form>
     
@@ -33,10 +32,6 @@
 <script>
     // Get the form and button elements for LocationForm
     const locationForm = document.getElementById('locationForm');
-    //const getLocationBtn = document.getElementById('getLocationBtn');
-
-    // Listen for the button click event
-    //getLocationBtn.addEventListener('click', getLocation);
 
     function getLocation() {
         // Check if the browser supports geolocation
@@ -56,19 +51,6 @@
         // Submit the form
         //locationForm.submit();
     }
-
-    // function fillLocationForm() {
-    // // Get the user's geolocation
-    //     const latitude = position.coords.latitude;
-    //     const longitude = position.coords.longitude;
-
-    //     // Set the latitude and longitude values in the hidden form inputs
-    //     document.getElementById('latitudeInput').value = latitude;
-    //     document.getElementById('longitudeInput').value = longitude;
-
-    //     // Submit the form
-    //     locationForm.submit();
-    // };
 
 
 
