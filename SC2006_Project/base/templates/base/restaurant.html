@@ -19,6 +19,7 @@
     <p>Rating: {{review.restaurant_rating}}/5</p>
     <p>------------------------------------</p>
 {% endfor %}
+<a href="{% url 'leaveReview' %}"><button>Leave your own reviews here!</button></a>
 
 <h3>Need some help? We'll show you how to get there!</h3>
 <a href = "https://maps.google.com" id = aMap data-lat = '{{selected_res.lat}}' data-lon = '{{selected_res.lon}}'>Get directions here!</a>
