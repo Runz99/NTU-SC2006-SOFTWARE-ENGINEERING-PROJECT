@@ -25,7 +25,6 @@ from .forms import CustomPasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 
-#API_KEY = os.environ.get('API_KEY')
 #==========================================================================================================================================================
 
 def home(request):
