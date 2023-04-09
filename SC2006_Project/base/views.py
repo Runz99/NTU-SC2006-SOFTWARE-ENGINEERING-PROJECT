@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.conf import settings
+from .forms import CustomUserCreationForm
 from django.db import models
 from .models import restaurant
 from .models import review
@@ -13,9 +15,17 @@ from django.views.generic import CreateView
 from .forms import *
 from .forms import reviewForm
 import requests
+import googlemaps
 import json
 import math
+import urllib.parse
+import os
+from django.contrib.auth.forms import UserChangeForm
+from .forms import CustomPasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import get_object_or_404
 
+#API_KEY = os.environ.get('API_KEY')
 #==========================================================================================================================================================
 
 def home(request):
@@ -53,10 +63,10 @@ def logOut(request):
     return redirect('home')
 
 def createUser(request):
-    form = UserCreationForm()
+    form = CustomUserCreationForm()
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
@@ -70,35 +80,86 @@ def createUser(request):
 
 #===========================================================================================================================================================
 
-def findNearestRestaurant(request):
-    location_data = None
-    top_10_res = None
+def searchRestaurant(request):
     res = restaurant.objects.all() #get all restaurant objects in database
     results=None
+
     if request.GET.get('search'): #get restaurant search
         search = request.GET.get('search')
         results = restaurant.objects.filter(name__contains=search)
+    context = {'res': res, 'results' : results}  #pass res into html
+    return render(request, 'base/search_restaurant.html', context)
+
+# function that takes in user location and saves it, redirect to filter page (find_nearest_restaurant_2)
+def find_nearest_restaurant_1(request):
+    location_data = None
+    top_10_res = None
+    res = restaurant.objects.all() #get all restaurant objects in database
+    user_lats = None
+    user_longs = None
+
+    if request.GET.get('userAddress'):
+        userAddress = request.GET.get('userAddress')
+        #calls google API to get user's location:
+        encUA = urllib.parse.quote(userAddress)
+        API_KEY = settings.GOOGLE_API_KEY
+        result = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address="+encUA+"&key="+API_KEY)
+        location_data = result.json()
+        user_lats = location_data['results'][0]['geometry']['location']['lat']
+        user_longs = location_data['results'][0]['geometry']['location']['lng'] 
+
+        request.session['user_lats'] = user_lats
+        request.session['user_longs'] = user_longs
+        return redirect('find_nearest_restaurant_2')
+
 
     if request.method == "POST":
-        ip = requests.get('https://api.ipify.org?format=json')
-        ip_data = json.loads(ip.text)
-        loc = requests.get("http://ip-api.com/json/"+ip_data["ip"])
-        loc_data = loc.text
-        location_data = json.loads(loc_data)
-        user_lats = location_data['lat'] #will be used later to calculate distances
-        user_longs = location_data['lon'] #will be used later to calculate distances
-        # Calculate distance between user and each place
-        for eat in res:
-            eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
-        # Sort places by distance
-        sorted_res = sorted(res, key=lambda eat: eat.distance)
+        user_lats = float(request.POST.get('latitude'))
+        user_longs = float(request.POST.get('longitude')) #will be used later to calculate distances
 
-        top_10_res = sorted_res[:10]
-        
+        request.session['user_lats'] = user_lats
+        request.session['user_longs'] = user_longs
+        return redirect('find_nearest_restaurant_2')
     
-    context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res}  #pass res into html
-    return render(request, 'base/find_nearest_restaurant.html', context)
+    context = {'res': res,'data': location_data}  #pass res into html
+    return render(request, 'base/find_nearest_restaurant_1.html', context)
 
+# function that takes in user's cuisine preferences, which is optional (find_nearest_restaurant_3)
+def find_nearest_restaurant_2(request):
+    #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
+    if request.method == "POST":
+        #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
+        selected_choice = request.POST.get('cuisine_dropdown')
+        if selected_choice:
+            request.session['selected_choice'] = selected_choice
+        #request.session['selected_choice'] = selected_choice
+        return redirect('find_nearest_restaurant_3')
+
+    else:
+        cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
+        print(cuisine_choices)
+        context = {'cuisine_choice':cuisine_choices}
+        return render(request, 'base/find_nearest_restaurant_2.html', context)
+
+# function that displays results from previous 2 parameters
+def find_nearest_restaurant_3(request):
+    res = restaurant.objects.all()
+    user_lats = request.session.get('user_lats')
+    user_longs = request.session.get('user_longs')
+    top_10_res = None
+
+    for eat in res:
+        eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
+        # Sort places by distance
+    sorted_res = sorted(res, key=lambda eat: eat.distance)
+    top_10_res = sorted_res[:10]
+    
+    #context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res} 
+    context = {'res': res, 'lists':top_10_res}  #pass res into html
+    return render(request, 'base/find_nearest_restaurant_3.html', context)
+
+
+    
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371  # Radius of the earth in km
     dLat = math.radians(lat2-lat1)
@@ -109,6 +170,20 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
     distance = R * c  # Distance in km
     return distance
+
+def set_selected_res(request, res_id):
+    selected_res = restaurant.objects.get(id=res_id)
+
+    request.session['selected_res'] = {
+        'id': selected_res.id,
+        'name': selected_res.name,
+        'address': selected_res.address,
+        'lat': selected_res.lat,
+        'lon': selected_res.lon,
+        'cuisine': selected_res.cuisine
+    }
+
+    return redirect('restaurant_info')
 
 #===========================================================================================================================================================
 
@@ -136,15 +211,115 @@ def leaveReviews(request):
 #===========================================================================================================================================================
 
 def restaurant_info(request):
-    context = {}
+    '''
+    Gets information of restaurant that user clicked on and renders it in restaurant.html
+
+    param request: Contains information of restaurant clicked
+    returns: renders restaurant.html with specified restaurant's info and restaurant's reviews
+
+    '''
+    selected_res = request.session.get('selected_res')
+    #chosen_res = restaurant.objects.get(id = res_id)
+    restaurantReview = review.objects.filter(address = selected_res.get('id'))
+
+    context = {'selected_res': selected_res, 'restaurantReview' : restaurantReview}
     return render(request, 'base/restaurant.html', context)
+
 
 #===========================================================================================================================================================
 
 def contact(request):
+    '''
+    Renders contact.html when contact is clicked
+
+    param request: Passes state through system
+    returns: renders contact.html
+
+    '''
     context = {}
     return render(request, 'base/contact.html',context)
 
 def faq(request):
+    '''
+    Renders faq.html when contact is clicked
+
+    param request: Passes state through system
+    returns: renders faq.html
+
+    '''
     context = {}
     return render(request, 'base/faq.html',context)
+
+
+#===========================================================================================================================================================
+
+# User Account Page 
+@login_required(login_url='login')
+def account(request):
+    return render(request, 'base/account.html')
+
+# View users' own reviews 
+@login_required(login_url='login')
+def view_my_own_reviews(request):
+    user_reviews = review.objects.filter(user_name=request.user.username)
+    context = {'user_reviews': user_reviews}
+    return render(request, 'base/view_my_own_reviews.html', context)
+
+# User can edit or delete their own reviews
+@login_required(login_url='login')
+def edit_review(request, review_id):
+    rev = get_object_or_404(review, id=review_id)
+    if request.method == 'POST':
+        form = reviewForm(request.POST)
+        if form.is_valid():
+            rev.address = form.cleaned_data['address']
+            rev.restaurant_review = form.cleaned_data['restaurant_review']
+            rev.restaurant_rating = form.cleaned_data['restaurant_rating']
+            rev.save()
+            return redirect('view_my_own_reviews')
+    else:
+        initial_data = {
+            'address': rev.address,
+            'restaurant_review': rev.restaurant_review,
+            'restaurant_rating': rev.restaurant_rating,
+        }
+        form = reviewForm(initial=initial_data)
+
+    return render(request, 'base/edit_review.html', {'form': form})
+
+@login_required(login_url='login')
+def delete_review(request, review_id):
+    review_instance = get_object_or_404(review, id=review_id, user_name=request.user)
+    if request.method == 'POST':
+        review_instance.delete()
+        messages.success(request, 'Review deleted successfully!')
+        return redirect('view_my_own_reviews')
+    
+    context = {'review': review_instance}
+    return render(request, 'base/delete_review.html', context)
+
+# Change users' particulars
+@login_required(login_url='login')
+def change_particulars(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+        password_form = CustomPasswordChangeForm(request.user, request.POST)
+
+        if form.is_valid():
+            form.save()
+
+        if password_form.is_valid():
+            user = password_form.save()
+            update_session_auth_hash(request, user)  # Keeps the user logged in after password change
+            messages.success(request, 'Password changed successfully. Please log in again.')
+            return redirect('login')
+        else:
+            messages.error(request, 'Error updating password.')
+    else:
+        form = EditProfileForm(instance=request.user)
+        password_form = CustomPasswordChangeForm(request.user)
+
+    context = {'form': form, 'password_form': password_form}
+    return render(request, 'base/change_particulars.html', context)
+
+

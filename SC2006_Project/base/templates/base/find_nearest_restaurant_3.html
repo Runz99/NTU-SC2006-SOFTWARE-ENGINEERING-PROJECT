@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+{% for list in lists %}
+    <li>
+        <ul>
+            <a href="{% url 'set_selected_res' list.id %}">{{list.name}}</a>
+            {{list.address}}
+            {{list.cuisine}}
+        </ul>
+    </li>
+{% endfor %}
+
+{% endblock %}
