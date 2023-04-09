@@ -22,4 +22,9 @@ urlpatterns = [
     path('find-nearest-restaurant-2', views.find_nearest_restaurant_2, name='find_nearest_restaurant_2'),
     path('find-nearest-restaurant-3', views.find_nearest_restaurant_3, name='find_nearest_restaurant_3'),
     #path('restaurant-info/<int:place_id>/', restaurant_info, name='restaurant_info'),
+    path('account', views.account, name='account'),
+    path('change_particulars/', views.change_particulars, name='change_particulars'),
+    path('view_my_own_reviews/', views.view_my_own_reviews, name='view_my_own_reviews'),
+    path('edit_review/<int:review_id>/', views.edit_review, name='edit_review'),
+    path('delete_review/<int:review_id>/', views.delete_review, name='delete_review')
 ]

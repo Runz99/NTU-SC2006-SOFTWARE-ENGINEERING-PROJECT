@@ -4,6 +4,8 @@ from .models import restaurant
 from .models import review
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
 
 ratingChoice = [('1','1'),('2','2'),('3','3'),('4','4'),('5','5'),]
 
@@ -35,3 +37,15 @@ class CoordinatesForm(forms.Form):
     user_lats = forms.FloatField()
     user_longs = forms.FloatField()
     use_current_location = forms.BooleanField(required=False, label='use_current_location')
+
+class EditProfileForm(UserChangeForm):
+    password = None
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    
+    pass
+

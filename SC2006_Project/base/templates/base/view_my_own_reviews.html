@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+{% block content %}
+  <h1>My Reviews</h1>
+  {% for review in user_reviews %}
+    <div>
+      <h3>{{ review.address }}</h3>
+      <p>{{ review.restaurant_review }}</p>
+      <p>Rating: {{ review.restaurant_rating }}/5</p>
+      <a href="{% url 'edit_review' review.id %}" class="btn btn-primary">Edit</a>
+      <a href="{% url 'delete_review' review.id %}" class="btn btn-danger">Delete</a>
+    </div>
+  {% empty %}
+    <p>You have not submitted any reviews.</p>
+  {% endfor %}
+{% endblock %}

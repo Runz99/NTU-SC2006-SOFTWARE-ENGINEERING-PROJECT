@@ -1,0 +1,11 @@
+{% extends 'main.html' %}
+{% block content %}
+  <h1>Account Page</h1>
+  <a href="{% url 'change_particulars' %}">
+    <button>Change Particulars</button>
+  </a>
+  <a href="{% url 'view_my_own_reviews' %}">
+    <button>View My Own Reviews</button>
+  </a>
+{% endblock %}
+

@@ -20,8 +20,11 @@ import json
 import math
 import urllib.parse
 import os
+from django.contrib.auth.forms import UserChangeForm
+from .forms import CustomPasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import get_object_or_404
 
-#API_KEY = os.environ.get('API_KEY')
 #==========================================================================================================================================================
 
 def home(request):
@@ -245,3 +248,77 @@ def faq(request):
     '''
     context = {}
     return render(request, 'base/faq.html',context)
+
+
+#===========================================================================================================================================================
+
+# User Account Page 
+@login_required(login_url='login')
+def account(request):
+    return render(request, 'base/account.html')
+
+# View users' own reviews 
+@login_required(login_url='login')
+def view_my_own_reviews(request):
+    user_reviews = review.objects.filter(user_name=request.user.username)
+    context = {'user_reviews': user_reviews}
+    return render(request, 'base/view_my_own_reviews.html', context)
+
+# User can edit or delete their own reviews
+@login_required(login_url='login')
+def edit_review(request, review_id):
+    rev = get_object_or_404(review, id=review_id)
+    if request.method == 'POST':
+        form = reviewForm(request.POST)
+        if form.is_valid():
+            rev.address = form.cleaned_data['address']
+            rev.restaurant_review = form.cleaned_data['restaurant_review']
+            rev.restaurant_rating = form.cleaned_data['restaurant_rating']
+            rev.save()
+            return redirect('view_my_own_reviews')
+    else:
+        initial_data = {
+            'address': rev.address,
+            'restaurant_review': rev.restaurant_review,
+            'restaurant_rating': rev.restaurant_rating,
+        }
+        form = reviewForm(initial=initial_data)
+
+    return render(request, 'base/edit_review.html', {'form': form})
+
+@login_required(login_url='login')
+def delete_review(request, review_id):
+    review_instance = get_object_or_404(review, id=review_id, user_name=request.user)
+    if request.method == 'POST':
+        review_instance.delete()
+        messages.success(request, 'Review deleted successfully!')
+        return redirect('view_my_own_reviews')
+    
+    context = {'review': review_instance}
+    return render(request, 'base/delete_review.html', context)
+
+# Change users' particulars
+@login_required(login_url='login')
+def change_particulars(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+        password_form = CustomPasswordChangeForm(request.user, request.POST)
+
+        if form.is_valid():
+            form.save()
+
+        if password_form.is_valid():
+            user = password_form.save()
+            update_session_auth_hash(request, user)  # Keeps the user logged in after password change
+            messages.success(request, 'Password changed successfully. Please log in again.')
+            return redirect('login')
+        else:
+            messages.error(request, 'Error updating password.')
+    else:
+        form = EditProfileForm(instance=request.user)
+        password_form = CustomPasswordChangeForm(request.user)
+
+    context = {'form': form, 'password_form': password_form}
+    return render(request, 'base/change_particulars.html', context)
+
+
