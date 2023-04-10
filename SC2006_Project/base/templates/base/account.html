@@ -1,11 +1,20 @@
 {% extends 'main.html' %}
 {% block content %}
+
   <h1>Account Page</h1>
   <a href="{% url 'change_particulars' %}">
     <button>Change Particulars</button>
   </a>
-  <a href="{% url 'view_my_own_reviews' %}">
-    <button>View My Own Reviews</button>
-  </a>
+  {% if not request.user.is_staff %}
+    <a href="{% url 'view_my_own_reviews' %}">
+      <button>View My Own Reviews</button>
+    </a>
+  {% endif %}
+  {% if request.user.is_staff %}
+    <a href="{% url 'list_restaurants' %}">
+      <button>Manage Restaurants</button>
+    <a href="{% url 'list_users' %}">
+      <button>Manage Users</button>
+    </a>
+  {% endif %}
 {% endblock %}
-

@@ -49,3 +49,10 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     
     pass
 
+class RestaurantForm(forms.ModelForm):
+    class Meta:
+        model = restaurant
+        fields = '__all__'
+
+
+

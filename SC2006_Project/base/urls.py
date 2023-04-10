@@ -26,5 +26,12 @@ urlpatterns = [
     path('change_particulars/', views.change_particulars, name='change_particulars'),
     path('view_my_own_reviews/', views.view_my_own_reviews, name='view_my_own_reviews'),
     path('edit_review/<int:review_id>/', views.edit_review, name='edit_review'),
-    path('delete_review/<int:review_id>/', views.delete_review, name='delete_review')
+    path('delete_review/<int:review_id>/', views.delete_review, name='delete_review'),
+    path('delete_users/<int:user_id>/', views.delete_users, name='delete_users'),
+    path('delete_reviews/<int:user_id>/', views.delete_reviews, name='delete_reviews'),
+    path('update_user_account/<int:user_id>/', views.update_user_account, name='update_user_account'),
+    path('list_users/', views.list_users, name='list_users'),
+    path('list_restaurants/', views.list_restaurants, name='list_restaurants'),
+    path('delete_restaurant/<int:restaurant_id>/', views.delete_restaurant, name='delete_restaurant'),
+    path('add_restaurant/', views.add_restaurant, name='add_restaurant'),
 ]
