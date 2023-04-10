@@ -122,6 +122,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -135,4 +136,4 @@ EMAIL_HOST_USER = 'sdjango643@gmail.com'
 EMAIL_HOST_PASSWORD = 'bahwkvlbuffhmkac'
 #DEFAULT_FROM_EMAIL = 'password1@'
 
-GOOGLE_API_KEY = ''
+GOOGLE_API_KEY = 'AIzaSyBzlOQMsI0qa7EbMN9vde_3YSwOi5kG8BQ'

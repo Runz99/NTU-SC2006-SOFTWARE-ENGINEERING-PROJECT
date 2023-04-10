@@ -24,6 +24,8 @@ from django.contrib.auth.forms import UserChangeForm
 from .forms import CustomPasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
+API_KEY = settings.GOOGLE_API_KEY
+
 
 #==========================================================================================================================================================
 
@@ -78,7 +80,6 @@ def createUser(request):
     return render(request, 'base/create_user.html', context)
 
 #===========================================================================================================================================================
-
 def searchRestaurant(request):
     res = restaurant.objects.all() #get all restaurant objects in database
     results=None
@@ -89,6 +90,7 @@ def searchRestaurant(request):
     context = {'res': res, 'results' : results}  #pass res into html
     return render(request, 'base/search_restaurant.html', context)
 
+#===========================================================================================================================================================
 # function that takes in user location and saves it, redirect to filter page (find_nearest_restaurant_2)
 def find_nearest_restaurant_1(request):
     location_data = None
@@ -101,7 +103,6 @@ def find_nearest_restaurant_1(request):
         userAddress = request.GET.get('userAddress')
         #calls google API to get user's location:
         encUA = urllib.parse.quote(userAddress)
-        API_KEY = settings.GOOGLE_API_KEY
         result = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address="+encUA+"&key="+API_KEY)
         location_data = result.json()
         user_lats = location_data['results'][0]['geometry']['location']['lat']
@@ -123,9 +124,17 @@ def find_nearest_restaurant_1(request):
     context = {'res': res,'data': location_data}  #pass res into html
     return render(request, 'base/find_nearest_restaurant_1.html', context)
 
+
+#===========================================================================================================================================================
 # function that takes in user's cuisine preferences, which is optional (find_nearest_restaurant_3)
 def find_nearest_restaurant_2(request):
     #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
+    userLats = str(request.session['user_lats'])
+    userLongs = str(request.session['user_longs'])
+    currentLocation = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+userLats+","+userLongs+"&key="+API_KEY)
+    currentLocationStr = currentLocation.json()['results'][0]['formatted_address']
+    context = {'currentLocationStr':currentLocationStr}
+    
     if request.method == "POST":
         #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
         selected_choice = request.POST.get('cuisine_dropdown')
@@ -135,11 +144,12 @@ def find_nearest_restaurant_2(request):
         return redirect('find_nearest_restaurant_3')
 
     else:
-        cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
-        print(cuisine_choices)
-        context = {'cuisine_choice':cuisine_choices}
+        # cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
+        # print(cuisine_choices)
+        # context = {'cuisine_choice':cuisine_choices}
         return render(request, 'base/find_nearest_restaurant_2.html', context)
 
+#===========================================================================================================================================================
 # function that displays results from previous 2 parameters
 def find_nearest_restaurant_3(request):
     res = restaurant.objects.all()
@@ -157,8 +167,6 @@ def find_nearest_restaurant_3(request):
     context = {'res': res, 'lists':top_10_res}  #pass res into html
     return render(request, 'base/find_nearest_restaurant_3.html', context)
 
-
-    
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371  # Radius of the earth in km
     dLat = math.radians(lat2-lat1)
@@ -251,7 +259,6 @@ def faq(request):
 
 
 #===========================================================================================================================================================
-
 # User Account Page 
 @login_required(login_url='login')
 def account(request):

@@ -1,6 +1,10 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<style>
+    
+</style>
+
 
 <div>
     <form id = "locationForm" action= "" method="POST">
@@ -10,7 +14,7 @@
         <button type="button" onclick="getLocation()">Share Location</button>
     </form>
     
-    <p>Button not working? Try manually submitting your current address: </p>
+    <p>Button not working as intended? Try manually submitting your current address: </p>
     
     <form id = "locationAddressForm" action = "" method = "GET">
         {% csrf_token %}
