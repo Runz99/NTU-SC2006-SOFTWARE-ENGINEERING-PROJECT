@@ -1,9 +1,66 @@
 {% extends 'main.html' %}
 {% block content %}
-  <h1>Update User Account</h1>
+<style>
+  h1 {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+
+    margin-bottom: 20px;
+  }
+
+  button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #5dade2;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button[type="submit"]:hover {
+    background-color: #3498db;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    flex-direction: column;
+  }
+</style>
+
+<h1>Update User Account</h1>
+<div class="container">
+
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Update Account</button>
   </form>
+</div>
+<script>
+  $(document).ready(function() {
+    // Hide the help text initially
+    $('.form-control-feedback').hide();
+
+    // Show the help text when there's an error
+    $('.form-control').on('input', function() {
+      var feedback = $(this).next('.form-control-feedback');
+      if ($(this).hasClass('is-invalid') && $(this).val()) {
+        feedback.show();
+      } else {
+        feedback.hide();
+      }
+    });
+  });
+</script>
+
 {% endblock %}
