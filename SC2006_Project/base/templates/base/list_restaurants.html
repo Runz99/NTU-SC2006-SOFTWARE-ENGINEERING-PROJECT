@@ -1,5 +1,32 @@
 {% extends 'main.html' %}
 {% block content %}
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    flex-direction: column;
+  }
+
+
+  h1 {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  th {
+    margin: 10px;
+    padding: 10px;
+  }
+
+  td {
+    margin: 10px;
+    padding: 10px;
+  }
+</style>
+<div class="container">
   <h1>Restaurants</h1>
   <a href="{% url 'add_restaurant' %}">Add New Restaurant</a>
   <table>
@@ -12,14 +39,15 @@
     </thead>
     <tbody>
       {% for restaurant in restaurants %}
-        <tr>
-          <td>{{ restaurant.name }}</td>
-          <td>{{ restaurant.address }}</td>
-          <td>
-            <a href="{% url 'delete_restaurant' restaurant.id %}">Delete</a>
-          </td>
-        </tr>
+      <tr>
+        <td>{{ restaurant.name }}</td>
+        <td>{{ restaurant.address }}</td>
+        <td>
+          <a href="{% url 'delete_restaurant' restaurant.id %}">Delete</a>
+        </td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
+</div>
 {% endblock %}
