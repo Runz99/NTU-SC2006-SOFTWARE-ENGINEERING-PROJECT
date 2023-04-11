@@ -3,10 +3,6 @@
 {% block content %}
 
 <style>
-    body {
-        background-color: #f8f8f8;
-    }
-
     .container {
         display: flex;
         justify-content: center;
@@ -76,6 +72,13 @@
     }
 </style>
 
+
+
+
+
+
+
+
 <div class="container">
     <div class="wrapper">
         <div class="title">Login Form</div>
@@ -83,19 +86,29 @@
             {% csrf_token %}
 
             {% if request.GET.next %}
-                <input type="hidden" name="next" value="{{request.GET.next}}">
+            <input type="hidden" name="next" value="{{request.GET.next}}">
             {% endif %}
+
             <div class="row">
                 <input type="text" name='username' placeholder="Username" required>
             </div>
             <div class="row">
                 <input type="password" name="password" placeholder="Password" required>
             </div>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                    {% endfor %}
+            </ul>
+            {% endif %}
+
             <div class="pass"><a href="{% url 'password_reset' %}">Forgot Password?</a></div>
             <div>New to WGT? <a href="{% url 'create_user' %}">Sign up here!</a></div>
             <div class="row button">
                 <input type="submit" value="Login">
             </div>
+
         </form>
     </div>
 </div>
