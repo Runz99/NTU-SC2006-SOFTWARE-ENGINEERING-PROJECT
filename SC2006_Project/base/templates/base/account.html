@@ -1,5 +1,6 @@
 {% extends 'main.html' %}
 {% block content %}
+
 <style>
    h1 {
         font-size: 32px;
@@ -52,10 +53,26 @@
       <p class="para">Change Particulars</p>
     </a>
   </div>
-  <div class="row">
-    <a class="acc" href="{% url 'view_my_own_reviews' %}">
-      <p class="para">View My Own Reviews</p>
-    </a>
-  </div>
+{% if not request.user.is_staff %}
+<div class="row">
+<a class="acc" href="{% url 'view_my_own_reviews' %}">
+<p class="para">View My Own Reviews</p>
+</a>
+</div>
+{% endif %}
+
+{% if request.user.is_staff %}
+<div class="row">
+<a class="acc" href="{% url 'list_restaurants' %}">
+<p class="para">Manage Restaurants</p>
+</a>
+</div>
+<div class="row">
+<a class="acc" href="{% url 'list_users' %}">
+<p class="para">Manage Users</p>
+</a>
+</div>
+{% endif %}
+
 </div>
 {% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'main.html' %}
+{% block content %}
+  <h1>Delete Reviews for {{ user_id }}</h1>
+  <form method="POST">
+    {% csrf_token %}
+    <table>
+      <thead>
+        <tr>
+          <th>Select</th>
+          <th>Review ID</th>
+          <th>Review Content</th>
+          <th>Rating</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for review in reviews %}
+        <tr>
+          <td><input type="checkbox" name="review_ids" value="{{ review.id }}"></td>
+          <td>{{ review.id }}</td>
+          <td>{{ review.address }}</td>
+          <td>{{ review.restaurant_review }}</td>  
+          <td>{{ review.restaurant_rating }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <input type="submit" value="Delete Selected Reviews">
+  </form>
+{% endblock %}
