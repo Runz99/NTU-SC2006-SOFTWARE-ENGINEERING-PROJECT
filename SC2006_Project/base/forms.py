@@ -47,7 +47,16 @@ class CoordinatesForm(forms.Form):
 
 class EditProfileForm(UserChangeForm):
     password = None
-
+    username = forms.CharField(label ="User Name", max_length=30, required=True, error_messages={'required': 'Username is required.'})
+    first_name = forms.CharField(label ="First Name", max_length=30, required=True, error_messages={'required': 'First name is required.'})
+    last_name = forms.CharField(label ="Last Name", max_length=30, required=True, error_messages={'required': 'Last name is required.'})
+    email = forms.EmailField(label ="Email", max_length=254, required=True, error_messages={'required': 'Email is required.', 'invalid': 'Enter a valid email address.'})
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        for field_name, field in self.fields.items():
+            field.widget.attrs['placeholder'] = field.label
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email')
