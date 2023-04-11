@@ -7,10 +7,11 @@
         max-width: 800px;
         margin: 0 auto;
         padding: 30px;
+        flex-direction: column;
     }
 
-    h2 {
-        font-size: 24px;
+    h1 {
+        font-size: 32px;
         font-weight: bold;
         text-align: center;
         margin-bottom: 20px;
@@ -32,30 +33,52 @@
         line-height: 1.5;
         margin-bottom: 10px;
     }
+
+    button[type="submit"] {
+        padding: 10px 20px;
+        background-color: #5dade2;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #3498db;
+    }
+    .para {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
 </style>
 
 <div class="container">
-    <h2>Got something to say? Leave a review!</h2>
+    <h1>Got something to say? Leave a review!</h1>
 
-    {% if user.is_authenticated %}
-    Reviewing as: {{ user.username }}
+    <p class="para">
+        {% if user.is_authenticated %}
+        Reviewing as: {{ user.username }}
+
+    </p>
     <form method="post" name="review">
         {% csrf_token %}
         {{ review.as_p }}
         <button type="submit">Submit
         </button>
-   
-      </form>
 
-      {% if messages %}
-      <ul class="messages">
-          {% for message in messages %}
-          <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-          {% endfor %}
-      </ul>
-      {% endif %}
-      {% else %}
-      <p>You are not logged in</p>
-      {% endif %}
-  </div>
-{% endblock content %}      
+    </form>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% else %}
+    <p>You are not logged in</p>
+    {% endif %}
+</div>
+{% endblock content %}

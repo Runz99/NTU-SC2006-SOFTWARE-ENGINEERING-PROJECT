@@ -1,12 +1,95 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<style>
+    h1 {
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-<h2>THIS IS THE HOME PAGE</h2> 
-{% if request.user.is_authenticated %}
-Welcome, {{request.user.username}}
-{% else %}
-Welcome!
-{% endif %}
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        flex-direction: column;
+    }
 
-{% endblock %}
+    .row {
+        margin: 10px 0;
+        align-items: center;
+
+        justify-content: center;
+    }
+
+
+    /* Styles for the location form */
+    #locationForm {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    button[type="submit"] {
+        padding: 10px 20px;
+        background-color: #5dade2;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #3498db;
+    }
+</style>
+<div class="container">
+    <h1>Finding the best food around.</h1>
+    <div class="row">
+        {% if request.user.is_authenticated %}
+        Welcome, {{request.user.username}}
+        {% else %}
+        Welcome!
+        {% endif %}
+
+    </div>
+    <div class="row">
+        <div class="row">
+            <form id="locationForm" action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="latitudeInput" name="latitude">
+                <input type="hidden" id="longitudeInput" name="longitude">
+                <button type="submit" onclick="getLocation()">Find Nearby Restaurants</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    // Get the form and button elements for LocationForm
+    const locationForm = document.getElementById('locationForm');
+
+    function getLocation() {
+        // Check if the browser supports geolocation
+        if (navigator.geolocation) {
+            // Get the user's current position
+            navigator.geolocation.getCurrentPosition(fillLocationForm);
+        } else {
+            // If geolocation is not supported, display an error message
+            alert("Geolocation is not supported by this browser. Try using entering your manual location under the find nearest restaurant page.");
+        }
+    }
+
+    function fillLocationForm(position) {
+        document.getElementById('latitudeInput').value = position.coords.latitude;
+        document.getElementById('longitudeInput').value = position.coords.longitude;
+        document.getElementById("locationForm").submit();
+    }
+
+
+
+</script>
+
+{% endblock content %}

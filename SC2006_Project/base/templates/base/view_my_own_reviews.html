@@ -1,5 +1,26 @@
 {% extends 'main.html' %}
 {% block content %}
+
+<style>
+
+.container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        flex-direction: column;
+    }
+
+
+    h1 {
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+</style>
+<div class = "container">
+
   <h1>My Reviews</h1>
   {% for review in user_reviews %}
     <div>
@@ -12,4 +33,6 @@
   {% empty %}
     <p>You have not submitted any reviews.</p>
   {% endfor %}
+</div>  
+
 {% endblock %}
