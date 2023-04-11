@@ -1,5 +1,46 @@
 {% extends 'main.html' %}
 {% block content %}
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    flex-direction: column;
+  }
+
+
+  h1 {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  th {
+    margin: 10px;
+    padding: 10px;
+  }
+
+  td {
+    margin: 10px;
+    padding: 10px;
+  }
+
+  input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #5dade2;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  input[type="submit"]:hover {
+    background-color: #3498db;
+  }
+</style>
+<div class="container">
   <h1>Delete Reviews for {{ user_id }}</h1>
   <form method="POST">
     {% csrf_token %}
@@ -18,7 +59,7 @@
           <td><input type="checkbox" name="review_ids" value="{{ review.id }}"></td>
           <td>{{ review.id }}</td>
           <td>{{ review.address }}</td>
-          <td>{{ review.restaurant_review }}</td>  
+          <td>{{ review.restaurant_review }}</td>
           <td>{{ review.restaurant_rating }}</td>
         </tr>
         {% endfor %}
@@ -26,4 +67,7 @@
     </table>
     <input type="submit" value="Delete Selected Reviews">
   </form>
+
+</div>
+
 {% endblock %}
