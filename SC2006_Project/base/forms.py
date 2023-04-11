@@ -6,6 +6,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import password_validation
+
 
 ratingChoice = [('1','1'),('2','2'),('3','3'),('4','4'),('5','5'),]
 
@@ -69,6 +71,8 @@ class RestaurantForm(forms.ModelForm):
     class Meta:
         model = restaurant
         fields = '__all__'
+
+
 
 
 

@@ -300,14 +300,28 @@ def delete_review(request, review_id):
     return render(request, 'base/delete_review.html', context)
 
 # Change users' particulars
+# Change users' particulars
 @login_required(login_url='login')
 def change_particulars(request):
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=request.user)
-        password_form = CustomPasswordChangeForm(request.user, request.POST)
 
         if form.is_valid():
             form.save()
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('account')
+        else:
+            messages.error(request, 'Error updating profile.')
+    else:
+        form = EditProfileForm(instance=request.user)
+
+    context = {'form': form}
+    return render(request, 'base/change_particulars.html', context)
+
+@login_required(login_url='login')
+def change_password(request):
+    if request.method == 'POST':
+        password_form = CustomPasswordChangeForm(request.user, request.POST)
 
         if password_form.is_valid():
             user = password_form.save()
@@ -317,12 +331,12 @@ def change_particulars(request):
         else:
             messages.error(request, 'Error updating password.')
     else:
-        form = EditProfileForm(instance=request.user)
         password_form = CustomPasswordChangeForm(request.user)
 
-    context = {'form': form, 'password_form': password_form}
-    return render(request, 'base/change_particulars.html', context)
+    context = {'password_form': password_form}
+    return render(request, 'base/change_password.html', context)
 
+# For admin account to manage users and restaurants
 @user_passes_test(lambda u: u.is_staff, login_url='login')
 def list_users(request):
     users = User.objects.all()
