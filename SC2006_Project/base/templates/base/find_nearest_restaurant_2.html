@@ -2,7 +2,7 @@
 
 {% block content %}
 <style>
-form{
+#cuisine_form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -13,20 +13,34 @@ form{
     min-width: 500px;
 }
 
+#currentLocation{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    justify-content: center;
+}
+
+.form_label{
+    font-weight: bold;
+}
+
+
 </style>
 
-<div>
-    Your current location is: {{current_location}}
-    <button type="button" class="btn btn-primary">Update Location</button>
+<div id = "currentLocation">
+    <div>Your current location is: {{currentLocationStr}}</div>
+    <a class="btn btn-primary" href="/find-nearest-restaurant">Re-enter</a>
 </div>
 
 <form action="" method="POST" id = "cuisine_form">
     {% csrf_token %}
-    <label for="cuisine_dropdown">Include Cuisine Types:</label>
+    <label for="cuisine_dropdown" class = "form_label">Include Cuisine Types:</label>
     <select multiple 
     multiselect-search="true" 
     multiselect-select-all="true"
-    name="cuisine_dropdown" 
+    name="cuisines" 
     id="cuisine_dropdown" 
     class = "multi_dropdown"
     >
@@ -36,7 +50,7 @@ form{
         <option value="Coffee & Tea" selected>Coffee & Tea</option>
     </select>
 
-    <label for="restrictions">Dietary Restrictions:</label>
+    <label for="restrictions" class = "form_label">Dietary Restrictions:</label>
     <select multiple 
     multiselect-search="true" 
     multiselect-select-all="true"
@@ -49,8 +63,8 @@ form{
         <option value="Vegan">Vegan</option>
     </select>
 
-    <label for="distance_dropdown">Find restaurants within:</label>
-    <select name="distance_dropdown">
+    <label for="distance_dropdown" class = "form_label">Find restaurants within:</label>
+    <select name="distance" id = "distance_dropdown">
         <option value="0.5">500m</option>
         <option value="1" selected>1km</option>
         <option value="2">2km</option>
@@ -59,11 +73,36 @@ form{
         <option value="5">5km</option>
     </select>
     <div>
-        <button type="Submit" class = "formbutton">Submit</button>
+        <button type="Submit" class = "formbutton btn btn-primary">Submit</button>
     </div>
 </form>
 
+{% if displayMap %}
+<div id= "map" style = "height: 350px; width: 50%;"></div>
+<script type = "module">
+    function initMap() {
+    const myLatLng = { lat: parseFloat("{{userLats}}"), lng: parseFloat("{{userLongs}}") };
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: myLatLng,
+    });
+
+    new google.maps.Marker({
+        position: myLatLng,
+        map,
+        title: "Hello World!",
+    });
+    }
+    window.initMap = initMap;
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{API_KEY}}&callback=initMap" defer>
+</script>
+{% endif %}
+
+
+
 <script>
+    //dropdown menu with search script:
     var style = document.createElement('style');
     style.setAttribute("id","multiselect_dropdown_styles");
     style.innerHTML = `
