@@ -1,10 +1,31 @@
 {% extends 'main.html' %}
 {% block content %}
-  <h1>Delete Review</h1>
-  <p>Are you sure you want to delete the review for "{{ review.address }}"?</p>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Yes, delete</button>
-    <a href="{% url 'view_my_own_reviews' %}" class="btn btn-secondary">No, go back</a>
-  </form>
+<style>
+  .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        flex-direction: column;
+    }
+    h1 {
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    </style>
+  <div class = "container">
+    <h1>Delete Review</h1>
+    <div class="row">
+      <p>Are you sure you want to delete the review for "{{ review.address }}"?</p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, delete</button>
+        <a href="{% url 'view_my_own_reviews' %}" class="btn btn-secondary">No, go back</a>
+      </form>
+    </div>
+    
+  
+
+  <div>
 {% endblock %}
