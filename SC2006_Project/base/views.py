@@ -26,7 +26,6 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 
-#API_KEY = os.environ.get('API_KEY')
 #==========================================================================================================================================================
 
 def home(request):
