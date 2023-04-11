@@ -1,6 +1,79 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<style>
+    body {
+        background-color: #f8f8f8;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .wrapper {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+        max-width: 800px;
+        width: 100%;
+    }
+
+    .title {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .pass,
+    .row a {
+        font-size: 14px;
+        color: #777;
+        text-decoration: none;
+        margin-top: 10px;
+        display: inline-block;
+    }
+
+    .row a:hover {
+        color: #333;
+    }
+
+    .row.button {
+        justify-content: center;
+    }
+
+    input[type="submit"] {
+        padding: 10px 20px;
+        background-color: #5dade2;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #3498db;
+    }
+</style>
 
 <div class="container">
     <div class="wrapper">
@@ -14,5 +87,22 @@
         </form>
         <div>Already a member? <a href="{% url 'login' %}">Log In Here!</a></div>
     </div>
-</div> 
+</div>
+
+<script>
+    $(document).ready(function() {
+      // Hide the help text initially
+      $('.form-control-feedback').hide();
+
+      // Show the help text when there's an error
+      $('.form-control').on('input', function() {
+        var feedback = $(this).next('.form-control-feedback');
+        if ($(this).hasClass('is-invalid') && $(this).val()) {
+          feedback.show();
+        } else {
+          feedback.hide();
+        }
+      });
+    });
+  </script>
 {% endblock %}
