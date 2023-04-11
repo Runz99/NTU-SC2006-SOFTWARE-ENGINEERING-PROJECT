@@ -1,9 +1,26 @@
 {% extends 'main.html' %}
 {% block content %}
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    flex-direction: column;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+</style>
+<div class="container">
   <h1>Delete Restaurant</h1>
   <p>Are you sure you want to delete the restaurant "{{ restaurant.name }}"?</p>
   <form method="POST">
     {% csrf_token %}
     <button type="submit">Yes, delete it</button>
   </form>
+</div>
 {% endblock %}
