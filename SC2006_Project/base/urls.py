@@ -34,4 +34,5 @@ urlpatterns = [
     path('list_restaurants/', views.list_restaurants, name='list_restaurants'),
     path('delete_restaurant/<int:restaurant_id>/', views.delete_restaurant, name='delete_restaurant'),
     path('add_restaurant/', views.add_restaurant, name='add_restaurant'),
+    path('change_password/', views.change_password, name='change_password'),
 ]
