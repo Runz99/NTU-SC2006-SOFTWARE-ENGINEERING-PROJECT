@@ -6,6 +6,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import password_validation
+
 
 ratingChoice = [('1','1'),('2','2'),('3','3'),('4','4'),('5','5'),]
 
@@ -25,9 +27,16 @@ class reviewForm(forms.Form):
     restaurant_rating = forms.CharField(label = "Rating", widget=forms.Select(choices=ratingChoice))
     
 class CustomUserCreationForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=True, help_text='Required.')
-    last_name = forms.CharField(max_length=30, required=True, help_text='Required.')
-    email = forms.EmailField(max_length=254, required=True, help_text='Required. Enter a valid email address.')
+    username = forms.CharField(label ="User Name", max_length=30, required=True, error_messages={'required': 'Username is required.'})
+    first_name = forms.CharField(label ="First Name", max_length=30, required=True, error_messages={'required': 'First name is required.'})
+    last_name = forms.CharField(label ="Last Name", max_length=30, required=True, error_messages={'required': 'Last name is required.'})
+    email = forms.EmailField(label ="Email", max_length=254, required=True, error_messages={'required': 'Email is required.', 'invalid': 'Enter a valid email address.'})
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        for field_name, field in self.fields.items():
+            field.widget.attrs['placeholder'] = field.label
 
     class Meta:
         model = User
@@ -40,7 +49,16 @@ class CoordinatesForm(forms.Form):
 
 class EditProfileForm(UserChangeForm):
     password = None
-
+    username = forms.CharField(label ="User Name", max_length=30, required=True, error_messages={'required': 'Username is required.'})
+    first_name = forms.CharField(label ="First Name", max_length=30, required=True, error_messages={'required': 'First name is required.'})
+    last_name = forms.CharField(label ="Last Name", max_length=30, required=True, error_messages={'required': 'Last name is required.'})
+    email = forms.EmailField(label ="Email", max_length=254, required=True, error_messages={'required': 'Email is required.', 'invalid': 'Enter a valid email address.'})
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        for field_name, field in self.fields.items():
+            field.widget.attrs['placeholder'] = field.label
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email')
@@ -48,4 +66,13 @@ class EditProfileForm(UserChangeForm):
 class CustomPasswordChangeForm(PasswordChangeForm):
     
     pass
+
+class RestaurantForm(forms.ModelForm):
+    class Meta:
+        model = restaurant
+        fields = '__all__'
+
+
+
+
 

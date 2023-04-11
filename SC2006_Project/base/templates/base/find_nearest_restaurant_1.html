@@ -2,26 +2,115 @@
 
 {% block content %}
 <style>
-    
+    h1 {
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+
+    /* Styles for the location form */
+    #locationForm {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    button[type="submit"] {
+        padding: 10px 20px;
+        background-color: #5dade2;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #3498db;
+    }
+
+    /* Styles for the address form */
+    #locationAddressForm {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+    }
+
+    #locationAddressForm input[type=search] {
+        width: 250px;
+        padding: 8px 12px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-right: 10px;
+        margin-bottom: 20px;
+    }
+
+
+
+    /* Styles for the list items */
+
+
+    li {
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    li:hover {
+        background-color: #f5f5f5;
+    }
+
+
+
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        flex-direction: column;
+    }
+
+    .row {
+        margin: 10px 0;
+        align-items: center;
+
+        justify-content: center;
+    }
+
+    .para {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
 </style>
+<div class="container">
+    <h1>Find Nearest Restaurants</h1>
+    <div class="row">
+        <form id="locationForm" action="" method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="latitudeInput" name="latitude">
+            <input type="hidden" id="longitudeInput" name="longitude">
+            <button type="submit" onclick="getLocation()">Share Location</button>
+        </form>
+    </div>
 
+    <div class="row">
+        <p class="para">Button not working? Try manually submitting your current address: </p>
+    </div>
 
-<div>
-    <form id = "locationForm" action= "" method="POST">
-        {% csrf_token %}
-        <input type="hidden" id="latitudeInput" name="latitude">
-        <input type="hidden" id="longitudeInput" name="longitude">
-        <button type="button" onclick="getLocation()">Share Location</button>
-    </form>
-    
-    <p>Button not working as intended? Try manually submitting your current address: </p>
-    
-    <form id = "locationAddressForm" action = "" method = "GET">
-        {% csrf_token %}
-        <input type = "search" class = "searchBar" name = "userAddress">
-        <button class="searchBar" type="submit">Submit</button>
-    </form>
-    
+    <div class="row">
+        <form id="locationAddressForm" action="" method="GET">
+            {% csrf_token %}
+            <input type="search" class="searchBar" name="userAddress">
+            <button class="searchBar" type="submit">Submit</button>
+        </form>
+    </div>
     {% for list in lists %}
     <li>
         <ul>
@@ -48,7 +137,7 @@
         }
     }
 
-    function fillLocationForm(position){
+    function fillLocationForm(position) {
         document.getElementById('latitudeInput').value = position.coords.latitude;
         document.getElementById('longitudeInput').value = position.coords.longitude;
         document.getElementById("locationForm").submit();
