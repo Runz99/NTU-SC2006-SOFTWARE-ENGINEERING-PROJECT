@@ -30,7 +30,7 @@
 </style>
 
 <div id = "currentLocation">
-    <div>Your current location is: {{currentLocationStr}}</div>
+    <div><b>Your current location is:</b> {{currentLocationStr}}</div>
     <a class="btn btn-primary" href="/find-nearest-restaurant">Re-enter</a>
 </div>
 
@@ -44,7 +44,10 @@
     id="cuisine_dropdown" 
     class = "multi_dropdown"
     >
-        <option value="Alcohol" selected>Alcohol</option>
+        {% for cuisine in cuisine_options %}
+            <option value="{{cuisine}}" {% if newform or cuisine in cuisineList%} selected {% endif %}>{{cuisine}}</option>
+        {% endfor %}
+        <!-- <option value="Alcohol" selected>Alcohol</option>
         <option value="BBQ" selected>BBQ</option>
         <option value="Bubble Tea" selected>Bubble Tea</option>
         <option value="Chinese" selected>Chinese</option>
@@ -64,7 +67,7 @@
         <option value="Thai" selected>Thai</option>
         <option value="Western" selected>Western</option>
         <option value="Seafood" selected>Seafood</option>
-        <option value="Steak" selected>Steak</option>
+        <option value="Steak" selected>Steak</option> -->
     </select>
 
     <label for="restrictions" class = "form_label">Dietary Restrictions:</label>
@@ -75,19 +78,19 @@
     id="restrictions" 
     class = "multi_dropdown"
     >
-        <option value="Halal">Halal</option>
-        <option value="Vegetarian Friendly">Vegetarian</option>
-        <option value="Vegan">Vegan</option>
+    {% for restriction in restriction_options %}
+        <option value="{{restriction}}" {% if newform or restriction in restrictionList%} selected {% endif %}>{{restriction}}</option>
+    {% endfor %}
     </select>
 
     <label for="distance_dropdown" class = "form_label">Find restaurants within:</label>
     <select name="distance" id = "distance_dropdown">
-        <option value="0.5">500m</option>
-        <option value="1" selected>1km</option>
-        <option value="2">2km</option>
-        <option value="3">3km</option>
-        <option value="4">4km</option>
-        <option value="5">5km</option>
+        <option value="0.5"{% if maxDist == "0.5" %} selected {% endif %}>500m</option>
+        <option value="1" {% if newform or maxDist == "1" %} selected {% endif %}>1km</option>
+        <option value="2"{% if maxDist == "2" %} selected {% endif %}>2km</option>
+        <option value="3"{% if maxDist == "3" %} selected {% endif %}>3km</option>
+        <option value="4"{% if maxDist == "4" %} selected {% endif %}>4km</option>
+        <option value="5"{% if maxDist == "5" %} selected {% endif %}>5km</option>
     </select>
     <div>
         <button type="Submit" class = "formbutton btn btn-primary">Submit</button>

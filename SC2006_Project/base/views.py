@@ -96,7 +96,6 @@ def searchRestaurant(request):
 # function that takes in user location and saves it, redirect to filter page (find_nearest_restaurant_2)
 def find_nearest_restaurant_1(request):
     location_data = None
-    top_10_res = None
     res = restaurant.objects.all() #get all restaurant objects in database
     user_lats = None
     user_longs = None
@@ -137,9 +136,12 @@ def find_nearest_restaurant_2(request):
     userLatsStr = str(userLats)
     userLongsStr = str(userLongs)
     filteredRestaurantList = []
+    cuisineList = []
+    restrictionList = []
+    maxDist = 0
+    newform = True
     currentLocation = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+userLatsStr+","+userLongsStr+"&key="+API_KEY)
     currentLocationStr = currentLocation.json()['results'][0]['formatted_address']
-    context = {'currentLocationStr':currentLocationStr, 'userLats':userLatsStr, 'userLongs':userLongsStr, 'API_KEY': API_KEY}
 
     res = restaurant.objects.all()
     resultRestaurantList = []
@@ -149,14 +151,28 @@ def find_nearest_restaurant_2(request):
         if eat.distance <= 5:
             resultRestaurantList.append(eat)
     sortedRestaurantList = sorted(resultRestaurantList, key= lambda eat: eat.distance)
-    print('length: '+ str(len(sortedRestaurantList)))
+
+    cuisine_options = ["Alcohol", "Bubble Tea", "Chinese", "Japanese", "Western"]
+    restriction_options = ["Halal", "Vegetarian Friendly", "Vegan"]
+    context = {
+            'currentLocationStr':currentLocationStr, 
+            'userLats':userLatsStr, 
+            'userLongs':userLongsStr, 'API_KEY': API_KEY,
+            'cuisine_options':cuisine_options,
+            'restriction_options':restriction_options,
+            'newform':newform,
+            'maxDist': maxDist,
+            'restrictionList':restrictionList,
+            'cuisineList': cuisineList,
+        }
+
 
     if request.method == "POST":
         #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
         cuisineList = request.POST.getlist('cuisines')
         restrictionList = request.POST.getlist('restrictions')
         maxDist = request.POST.get('distance')
-       
+        newform = False
         for eat in sortedRestaurantList:
             eatTags = [n.strip() for n in ast.literal_eval(eat.cuisine)]
             # print("eattags: "+ str(eatTags))
@@ -172,7 +188,19 @@ def find_nearest_restaurant_2(request):
         # requests.session['filteredRestaurantList'] = filteredRestaurantList
         
         #do google maps thing
-        context = {'currentLocationStr':currentLocationStr, 'userLats':userLatsStr, 'userLongs':userLongsStr, 'API_KEY': API_KEY, 'filteredRestaurantList':filteredRestaurantList}
+        context = {
+                'maxDist': maxDist,
+                'restrictionList':restrictionList,
+                'cuisineList': cuisineList,
+                'newform':newform, 
+                'currentLocationStr':currentLocationStr, 
+                'userLats':userLatsStr, 
+                'userLongs':userLongsStr, 
+                'API_KEY': API_KEY, 
+                'filteredRestaurantList':filteredRestaurantList,
+                'cuisine_options':cuisine_options,
+                'restriction_options':restriction_options,
+            }
         # return redirect('find_nearest_restaurant_3')
 
     # else:
