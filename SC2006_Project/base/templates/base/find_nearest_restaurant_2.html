@@ -102,40 +102,41 @@
 <div id= "map" style = "height: 350px; width: 50%;"></div>
 
 <script type = "module">
-    function initMap() {
-        const myLatLng = { lat: parseFloat("{{userLats}}"), lng: parseFloat("{{userLongs}}") };
-        var map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 15,
-            center: myLatLng,
-        });
+    var mapsMarkerList = JSON.parse(document.getElementById("mapsMarkerList").textContent);
+    console.log(mapsMarkerList)
 
-        new google.maps.Marker({
-            position: myLatLng,
-            map,
-            title: "Hello World!",
-        });
-        
-        const mapsMarkerList = JSON.parse(document.getElementById("mapsMarkerList").textContent);
-        console.log(mapsMarkerList)
-        var marker, i;
-        var infowindow = new google.maps.InfoWindow();
+    const myLatLng = { lat: parseFloat("{{userLats}}"), lng: parseFloat("{{userLongs}}") };
+    var map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: myLatLng,
+    });
 
-        for(i = 0; i < mapsMarkerList.length; i++){
-            marker = new google.maps.Marker({
-                position: new google.maps.LatLng(parseFloat(mapsMarkerList[i].lat), parseFloat(mapsMarkerList[i].lng)),
-                map: map
-            });
-            google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                return function() {
-                    infowindow.setContent(mapsMarkerList[i].name)
-                    infowindow.open(map, marker);
-                }
-            })(marker, i));
-        }
+    new google.maps.Marker({
+        position: myLatLng,
+        map,
+        title: "Hello World!",
+    });
+    
+    var infowindow = new google.maps.InfoWindow();
+
+    var marker, i;
+
+    for(i = 0; i < mapsMarkerList.length; i++){
+        const LatLng = {lat: parseFloat(mapsMarkerList[i].lat), lng: parseFloat(mapsMarkerList[i].lon)}
+        console.log(LatLng)
+        marker = new google.maps.Marker({
+            position: LatLng,
+            map: map,
+        });
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+                infowindow.setContent(mapsMarkerList[i].name)
+                infowindow.open(map, marker);
+            }
+        })(marker, i));
     }
     
-    window.initMap = initMap;
-
+    
 </script>
 
 <div>
