@@ -1,5 +1,7 @@
 {% extends 'main.html' %}
 {% block content %}
+{% load static %}
+
 <style>
   .container {
     max-width: 800px;
@@ -8,6 +10,10 @@
     flex-direction: column;
   }
 
+  body {
+    background-image: url("{% static '\food2_website.jpg' %}");
+    background-size: cover;
+  }
 
   h1 {
     font-size: 32px;
