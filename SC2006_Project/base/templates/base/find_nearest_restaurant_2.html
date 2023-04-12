@@ -10,7 +10,7 @@
 }
 
 .multi_dropdown {
-    min-width: 500px;
+    min-width: 600px;
 }
 
 #currentLocation{
@@ -46,8 +46,25 @@
     >
         <option value="Alcohol" selected>Alcohol</option>
         <option value="BBQ" selected>BBQ</option>
+        <option value="Bubble Tea" selected>Bubble Tea</option>
         <option value="Chinese" selected>Chinese</option>
-        <option value="Coffee & Tea" selected>Coffee & Tea</option>
+        <option value="Dessert" selected>Dessert</option>
+        <option value="Fast Food" selected>Fast Food</option>
+        <option value="Ice Cream" selected>Ice Cream</option>
+        <option value="Indian" selected>Indian</option>
+        <option value="Indonesian" selected>Indonesian</option>
+        <option value="Italian" selected>Italian</option>
+        <option value="Japanese" selected>Japanese</option>
+        <option value="Korean" selected>Korean</option>
+        <option value="Local" selected>Local</option>
+        <option value="Malaysian" selected>Malaysian</option>
+        <option value="Pasta" selected>Pasta</option>
+        <option value="Pizza" selected>Pizza</option>
+        <option value="Taiwanese" selected>Taiwanese</option>
+        <option value="Thai" selected>Thai</option>
+        <option value="Western" selected>Western</option>
+        <option value="Seafood" selected>Seafood</option>
+        <option value="Steak" selected>Steak</option>
     </select>
 
     <label for="restrictions" class = "form_label">Dietary Restrictions:</label>
@@ -77,7 +94,6 @@
     </div>
 </form>
 
-{% if displayMap %}
 <div id= "map" style = "height: 350px; width: 50%;"></div>
 <script type = "module">
     function initMap() {
@@ -97,9 +113,18 @@
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{API_KEY}}&callback=initMap" defer>
 </script>
-{% endif %}
 
-
+<div>
+{% for list in filteredRestaurantList %}
+    <li>
+        <ul>
+            <a href="{% url 'set_selected_res' list.id %}">{{list.name}}</a>
+            {{list.address}}
+            {{list.cuisine}}
+        </ul>
+    </li>
+{% endfor %}
+</div>
 
 <script>
     //dropdown menu with search script:
@@ -284,7 +309,7 @@
         div.refresh=()=>{
             div.querySelectorAll('span.optext, span.placeholder').forEach(t=>div.removeChild(t));
             var sels=Array.from(el.selectedOptions);
-            if(sels.length>(el.attributes['multiselect-max-items']?.value??5)){
+            if(sels.length>(el.attributes['multiselect-max-items']?.value??30)){
             div.appendChild(newEl('span',{class:['optext','maxselected'],text:sels.length+' '+config.txtSelected}));          
             }
             else{

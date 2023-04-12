@@ -25,6 +25,7 @@ from .forms import CustomPasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
+import ast
 API_KEY = settings.GOOGLE_API_KEY
 
 
@@ -135,10 +136,10 @@ def find_nearest_restaurant_2(request):
     userLongs =request.session['user_longs']
     userLatsStr = str(userLats)
     userLongsStr = str(userLongs)
+    filteredRestaurantList = []
     currentLocation = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+userLatsStr+","+userLongsStr+"&key="+API_KEY)
     currentLocationStr = currentLocation.json()['results'][0]['formatted_address']
-    context = {'currentLocationStr':currentLocationStr}
-    displayMap = False
+    context = {'currentLocationStr':currentLocationStr, 'userLats':userLatsStr, 'userLongs':userLongsStr, 'API_KEY': API_KEY}
 
     res = restaurant.objects.all()
     resultRestaurantList = []
@@ -148,26 +149,30 @@ def find_nearest_restaurant_2(request):
         if eat.distance <= 5:
             resultRestaurantList.append(eat)
     sortedRestaurantList = sorted(resultRestaurantList, key= lambda eat: eat.distance)
+    print('length: '+ str(len(sortedRestaurantList)))
 
     if request.method == "POST":
         #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
         cuisineList = request.POST.getlist('cuisines')
         restrictionList = request.POST.getlist('restrictions')
         maxDist = request.POST.get('distance')
-        filteredRestaurantList = []
+       
         for eat in sortedRestaurantList:
-            eatTags = eat.cuisine.strip('][').split(', ') #get list of tags for each restaurant
+            eatTags = [n.strip() for n in ast.literal_eval(eat.cuisine)]
+            # print("eattags: "+ str(eatTags))
             if(set(restrictionList).issubset(set(eatTags))):  #meets all restrictions
+                # print("restriction list: "+ str(restrictionList))
                 if(len(set(eatTags).intersection(set(cuisineList))) != 0): #meets at least one cuisine
+                    # print("cuisine list: "+ str(cuisineList))
                     if(eat.distance <= float(maxDist)): #within max distance
                         filteredRestaurantList.append(eat)
+                        # print(eat.distance, maxDist)
 
         #cannot add object to session, needt to find a way to pass parameter I guess
         # requests.session['filteredRestaurantList'] = filteredRestaurantList
         
         #do google maps thing
-        displayMap = True
-        context = {'currentLocationStr':currentLocationStr,'displayMap':displayMap , 'userLats':userLatsStr, 'userLongs':userLongsStr, 'API_KEY': API_KEY, 'filteredRestaurantList':filteredRestaurantList}
+        context = {'currentLocationStr':currentLocationStr, 'userLats':userLatsStr, 'userLongs':userLongsStr, 'API_KEY': API_KEY, 'filteredRestaurantList':filteredRestaurantList}
         # return redirect('find_nearest_restaurant_3')
 
     # else:
@@ -186,7 +191,21 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
     distance = R * c  # Distance in km
     return distance
+#===========================================================================================================================================================
+def set_selected_res(request, res_id):
+    selected_res = restaurant.objects.get(id=res_id)
 
+    request.session['selected_res'] = {
+        'id': selected_res.id,
+        'name': selected_res.name,
+        'address': selected_res.address,
+        'restaurant_rating' : selected_res.restaurant_rating,
+        'lat': selected_res.lat,
+        'lon': selected_res.lon,
+        'cuisine': selected_res.cuisine
+    }
+
+    return redirect('restaurant_info')
 #===========================================================================================================================================================
 # displays list of restaurants based on user's location and cuisine preferences
 def find_nearest_restaurant_3(request):
@@ -204,23 +223,6 @@ def find_nearest_restaurant_3(request):
     #context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res} 
     context = {'res': res, 'lists':top_10_res}  #pass res into html
     return render(request, 'base/find_nearest_restaurant_3.html', context)
-
-
-
-def set_selected_res(request, res_id):
-    selected_res = restaurant.objects.get(id=res_id)
-
-    request.session['selected_res'] = {
-        'id': selected_res.id,
-        'name': selected_res.name,
-        'address': selected_res.address,
-        'restaurant_rating' : selected_res.restaurant_rating,
-        'lat': selected_res.lat,
-        'lon': selected_res.lon,
-        'cuisine': selected_res.cuisine
-    }
-
-    return redirect('restaurant_info')
 
 #===========================================================================================================================================================
 
