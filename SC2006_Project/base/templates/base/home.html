@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<style>
+<!-- <style>
     h1 {
         font-size: 32px;
         font-weight: bold;
@@ -45,7 +45,7 @@
     button[type="submit"]:hover {
         background-color: #3498db;
     }
-</style>
+</style> -->
 <div class="container">
     <h1>Finding the best food around.</h1>
     <div class="row">
@@ -56,40 +56,10 @@
         {% endif %}
 
     </div>
-    <div class="row">
-        <div class="row">
-            <form id="locationForm" action="" method="POST">
-                {% csrf_token %}
-                <input type="hidden" id="latitudeInput" name="latitude">
-                <input type="hidden" id="longitudeInput" name="longitude">
-                <button type="submit" onclick="getLocation()">Find Nearby Restaurants</button>
-            </form>
-        </div>
+
+    <div>
+        <a href="{% url 'find_nearest_restaurant_1' %}"><button>Find the nearest restaurant!</button></a>
     </div>
 </div>
-<script>
-    // Get the form and button elements for LocationForm
-    const locationForm = document.getElementById('locationForm');
-
-    function getLocation() {
-        // Check if the browser supports geolocation
-        if (navigator.geolocation) {
-            // Get the user's current position
-            navigator.geolocation.getCurrentPosition(fillLocationForm);
-        } else {
-            // If geolocation is not supported, display an error message
-            alert("Geolocation is not supported by this browser. Try using entering your manual location under the find nearest restaurant page.");
-        }
-    }
-
-    function fillLocationForm(position) {
-        document.getElementById('latitudeInput').value = position.coords.latitude;
-        document.getElementById('longitudeInput').value = position.coords.longitude;
-        document.getElementById("locationForm").submit();
-    }
-
-
-
-</script>
 
 {% endblock content %}
