@@ -129,7 +129,6 @@ def find_nearest_restaurant_1(request):
 #===========================================================================================================================================================
 # function that takes in user's cuisine preferences, which is optional (find_nearest_restaurant_3)
 def find_nearest_restaurant_2(request):
-    
     #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
     userLats = request.session['user_lats']
     userLongs =request.session['user_longs']
@@ -152,7 +151,11 @@ def find_nearest_restaurant_2(request):
             resultRestaurantList.append(eat)
     sortedRestaurantList = sorted(resultRestaurantList, key= lambda eat: eat.distance)
 
-    cuisine_options = ["Alcohol", "Bubble Tea", "Chinese", "Japanese", "Western"]
+    cuisine_options = ["Alcohol", "Bubble Tea", "Chinese", "Coffee & Tea", 
+                       "Dessert", "Fast Food", "Ice Cream", "Indian", "Indonesian", 
+                       "Italian", "Japanese", "Korean", "Local","Malaysian", "Pasta",
+                       "Taiwanese","Thai","Seafood","Steak","Western"]
+    
     restriction_options = ["Halal", "Vegetarian Friendly", "Vegan"]
     context = {
             'currentLocationStr':currentLocationStr, 

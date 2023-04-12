@@ -79,7 +79,7 @@
     class = "multi_dropdown"
     >
     {% for restriction in restriction_options %}
-        <option value="{{restriction}}" {% if newform or restriction in restrictionList%} selected {% endif %}>{{restriction}}</option>
+        <option value="{{restriction}}" {% if restriction in restrictionList%} selected {% endif %}>{{restriction}}</option>
     {% endfor %}
     </select>
 
