@@ -138,4 +138,4 @@ EMAIL_HOST_USER = 'sdjango643@gmail.com'
 EMAIL_HOST_PASSWORD = 'bahwkvlbuffhmkac'
 #DEFAULT_FROM_EMAIL = 'password1@'
 
-GOOGLE_API_KEY = ''
+GOOGLE_API_KEY = 'AIzaSyBzlOQMsI0qa7EbMN9vde_3YSwOi5kG8BQ'

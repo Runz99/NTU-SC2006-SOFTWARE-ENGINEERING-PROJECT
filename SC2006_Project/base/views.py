@@ -25,6 +25,9 @@ from .forms import CustomPasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
+import ast
+API_KEY = settings.GOOGLE_API_KEY
+
 
 #==========================================================================================================================================================
 
@@ -79,7 +82,6 @@ def createUser(request):
     return render(request, 'base/create_user.html', context)
 
 #===========================================================================================================================================================
-
 def searchRestaurant(request):
     res = restaurant.objects.all() #get all restaurant objects in database
     results=None
@@ -90,10 +92,10 @@ def searchRestaurant(request):
     context = {'res': res, 'results' : results}  #pass res into html
     return render(request, 'base/search_restaurant.html', context)
 
+#===========================================================================================================================================================
 # function that takes in user location and saves it, redirect to filter page (find_nearest_restaurant_2)
 def find_nearest_restaurant_1(request):
     location_data = None
-    top_10_res = None
     res = restaurant.objects.all() #get all restaurant objects in database
     user_lats = None
     user_longs = None
@@ -102,7 +104,6 @@ def find_nearest_restaurant_1(request):
         userAddress = request.GET.get('userAddress')
         #calls google API to get user's location:
         encUA = urllib.parse.quote(userAddress)
-        API_KEY = settings.GOOGLE_API_KEY
         result = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address="+encUA+"&key="+API_KEY)
         location_data = result.json()
         user_lats = location_data['results'][0]['geometry']['location']['lat']
@@ -124,24 +125,117 @@ def find_nearest_restaurant_1(request):
     context = {'res': res,'data': location_data}  #pass res into html
     return render(request, 'base/find_nearest_restaurant_1.html', context)
 
+
+#===========================================================================================================================================================
 # function that takes in user's cuisine preferences, which is optional (find_nearest_restaurant_3)
 def find_nearest_restaurant_2(request):
+    
     #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
+    userLats = request.session['user_lats']
+    userLongs =request.session['user_longs']
+    userLatsStr = str(userLats)
+    userLongsStr = str(userLongs)
+    filteredRestaurantList = []
+    cuisineList = []
+    restrictionList = []
+    maxDist = 0
+    newform = True
+    currentLocation = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+userLatsStr+","+userLongsStr+"&key="+API_KEY)
+    currentLocationStr = currentLocation.json()['results'][0]['formatted_address']
+
+    res = restaurant.objects.all()
+    resultRestaurantList = []
+    for eat in res:
+        eat.distance = calculate_distance(userLats, userLongs, float(eat.lat), float(eat.lon))
+        # Sort places by distance
+        if eat.distance <= 5:
+            resultRestaurantList.append(eat)
+    sortedRestaurantList = sorted(resultRestaurantList, key= lambda eat: eat.distance)
+
+    cuisine_options = ["Alcohol", "Bubble Tea", "Chinese", "Japanese", "Western"]
+    restriction_options = ["Halal", "Vegetarian Friendly", "Vegan"]
+    context = {
+            'currentLocationStr':currentLocationStr, 
+            'userLats':userLatsStr, 
+            'userLongs':userLongsStr, 'API_KEY': API_KEY,
+            'cuisine_options':cuisine_options,
+            'restriction_options':restriction_options,
+            'newform':newform,
+            'maxDist': maxDist,
+            'restrictionList':restrictionList,
+            'cuisineList': cuisineList,
+        }
+
+
     if request.method == "POST":
         #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
-        selected_choice = request.POST.get('cuisine_dropdown')
-        if selected_choice:
-            request.session['selected_choice'] = selected_choice
-        #request.session['selected_choice'] = selected_choice
-        return redirect('find_nearest_restaurant_3')
+        cuisineList = request.POST.getlist('cuisines')
+        restrictionList = request.POST.getlist('restrictions')
+        maxDist = request.POST.get('distance')
+        newform = False
+        for eat in sortedRestaurantList:
+            eatTags = [n.strip() for n in ast.literal_eval(eat.cuisine)]
+            # print("eattags: "+ str(eatTags))
+            if(set(restrictionList).issubset(set(eatTags))):  #meets all restrictions
+                # print("restriction list: "+ str(restrictionList))
+                if(len(set(eatTags).intersection(set(cuisineList))) != 0): #meets at least one cuisine
+                    # print("cuisine list: "+ str(cuisineList))
+                    if(eat.distance <= float(maxDist)): #within max distance
+                        filteredRestaurantList.append(eat)
+                        # print(eat.distance, maxDist)
 
-    else:
-        cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
-        print(cuisine_choices)
-        context = {'cuisine_choice':cuisine_choices}
-        return render(request, 'base/find_nearest_restaurant_2.html', context)
+        #cannot add object to session, needt to find a way to pass parameter I guess
+        # requests.session['filteredRestaurantList'] = filteredRestaurantList
+        
+        #do google maps thing
+        context = {
+                'maxDist': maxDist,
+                'restrictionList':restrictionList,
+                'cuisineList': cuisineList,
+                'newform':newform, 
+                'currentLocationStr':currentLocationStr, 
+                'userLats':userLatsStr, 
+                'userLongs':userLongsStr, 
+                'API_KEY': API_KEY, 
+                'filteredRestaurantList':filteredRestaurantList,
+                'cuisine_options':cuisine_options,
+                'restriction_options':restriction_options,
+            }
+        # return redirect('find_nearest_restaurant_3')
 
-# function that displays results from previous 2 parameters
+    # else:
+    #     # cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
+    #     # print(cuisine_choices)
+    #     # context = {'cuisine_choice':cuisine_choices}
+    return render(request, 'base/find_nearest_restaurant_2.html', context)
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    R = 6371  # Radius of the earth in km
+    dLat = math.radians(lat2-lat1)
+    dLon = math.radians(lon2-lon1)
+    a = math.sin(dLat/2) * math.sin(dLat/2) + \
+        math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * \
+        math.sin(dLon/2) * math.sin(dLon/2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    distance = R * c  # Distance in km
+    return distance
+#===========================================================================================================================================================
+def set_selected_res(request, res_id):
+    selected_res = restaurant.objects.get(id=res_id)
+
+    request.session['selected_res'] = {
+        'id': selected_res.id,
+        'name': selected_res.name,
+        'address': selected_res.address,
+        'restaurant_rating' : selected_res.restaurant_rating,
+        'lat': selected_res.lat,
+        'lon': selected_res.lon,
+        'cuisine': selected_res.cuisine
+    }
+
+    return redirect('restaurant_info')
+#===========================================================================================================================================================
+# displays list of restaurants based on user's location and cuisine preferences
 def find_nearest_restaurant_3(request):
     res = restaurant.objects.all()
     user_lats = request.session.get('user_lats')
@@ -157,34 +251,6 @@ def find_nearest_restaurant_3(request):
     #context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res} 
     context = {'res': res, 'lists':top_10_res}  #pass res into html
     return render(request, 'base/find_nearest_restaurant_3.html', context)
-
-
-    
-def calculate_distance(lat1, lon1, lat2, lon2):
-    R = 6371  # Radius of the earth in km
-    dLat = math.radians(lat2-lat1)
-    dLon = math.radians(lon2-lon1)
-    a = math.sin(dLat/2) * math.sin(dLat/2) + \
-        math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * \
-        math.sin(dLon/2) * math.sin(dLon/2)
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-    distance = R * c  # Distance in km
-    return distance
-
-def set_selected_res(request, res_id):
-    selected_res = restaurant.objects.get(id=res_id)
-
-    request.session['selected_res'] = {
-        'id': selected_res.id,
-        'name': selected_res.name,
-        'address': selected_res.address,
-        'restaurant_rating' : selected_res.restaurant_rating,
-        'lat': selected_res.lat,
-        'lon': selected_res.lon,
-        'cuisine': selected_res.cuisine
-    }
-
-    return redirect('restaurant_info')
 
 #===========================================================================================================================================================
 
@@ -265,7 +331,6 @@ def faq(request):
 
 
 #===========================================================================================================================================================
-
 # User Account Page 
 @login_required(login_url='login')
 def account(request):

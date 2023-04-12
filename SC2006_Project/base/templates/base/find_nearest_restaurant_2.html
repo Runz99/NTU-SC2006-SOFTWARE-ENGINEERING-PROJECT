@@ -1,26 +1,360 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<style>
+#cuisine_form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
 
-<form action="" method="POST">
+.multi_dropdown {
+    min-width: 600px;
+}
+
+#currentLocation{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    justify-content: center;
+}
+
+.form_label{
+    font-weight: bold;
+}
+
+
+</style>
+
+<div id = "currentLocation">
+    <div><b>Your current location is:</b> {{currentLocationStr}}</div>
+    <a class="btn btn-primary" href="/find-nearest-restaurant">Re-enter</a>
+</div>
+
+<form action="" method="POST" id = "cuisine_form">
     {% csrf_token %}
-    <label for="cuisine_dropdown">Choose a cuisine...</label>
-    <select name="cuisine_dropdown" id="cuisine_dropdown">
-        {% for cuisine in cuisine_choices %}
-            <option value="{{cuisine}}">{{cuisine}}</option>
+    <label for="cuisine_dropdown" class = "form_label">Include Cuisine Types:</label>
+    <select multiple 
+    multiselect-search="true" 
+    multiselect-select-all="true"
+    name="cuisines" 
+    id="cuisine_dropdown" 
+    class = "multi_dropdown"
+    >
+        {% for cuisine in cuisine_options %}
+            <option value="{{cuisine}}" {% if newform or cuisine in cuisineList%} selected {% endif %}>{{cuisine}}</option>
         {% endfor %}
+        <!-- <option value="Alcohol" selected>Alcohol</option>
+        <option value="BBQ" selected>BBQ</option>
+        <option value="Bubble Tea" selected>Bubble Tea</option>
+        <option value="Chinese" selected>Chinese</option>
+        <option value="Dessert" selected>Dessert</option>
+        <option value="Fast Food" selected>Fast Food</option>
+        <option value="Ice Cream" selected>Ice Cream</option>
+        <option value="Indian" selected>Indian</option>
+        <option value="Indonesian" selected>Indonesian</option>
+        <option value="Italian" selected>Italian</option>
+        <option value="Japanese" selected>Japanese</option>
+        <option value="Korean" selected>Korean</option>
+        <option value="Local" selected>Local</option>
+        <option value="Malaysian" selected>Malaysian</option>
+        <option value="Pasta" selected>Pasta</option>
+        <option value="Pizza" selected>Pizza</option>
+        <option value="Taiwanese" selected>Taiwanese</option>
+        <option value="Thai" selected>Thai</option>
+        <option value="Western" selected>Western</option>
+        <option value="Seafood" selected>Seafood</option>
+        <option value="Steak" selected>Steak</option> -->
     </select>
-    <button type="Submit">Submit</button>
+
+    <label for="restrictions" class = "form_label">Dietary Restrictions:</label>
+    <select multiple 
+    multiselect-search="true" 
+    multiselect-select-all="true"
+    name="restrictions" 
+    id="restrictions" 
+    class = "multi_dropdown"
+    >
+    {% for restriction in restriction_options %}
+        <option value="{{restriction}}" {% if newform or restriction in restrictionList%} selected {% endif %}>{{restriction}}</option>
+    {% endfor %}
+    </select>
+
+    <label for="distance_dropdown" class = "form_label">Find restaurants within:</label>
+    <select name="distance" id = "distance_dropdown">
+        <option value="0.5"{% if maxDist == "0.5" %} selected {% endif %}>500m</option>
+        <option value="1" {% if newform or maxDist == "1" %} selected {% endif %}>1km</option>
+        <option value="2"{% if maxDist == "2" %} selected {% endif %}>2km</option>
+        <option value="3"{% if maxDist == "3" %} selected {% endif %}>3km</option>
+        <option value="4"{% if maxDist == "4" %} selected {% endif %}>4km</option>
+        <option value="5"{% if maxDist == "5" %} selected {% endif %}>5km</option>
+    </select>
+    <div>
+        <button type="Submit" class = "formbutton btn btn-primary">Submit</button>
+    </div>
 </form>
 
-<style>
-    /* Style the dropdown menu */
-    #cuisine_dropdown {
-        width: 200px;
-        padding: 5px;
-        font-size: 16px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
+<div id= "map" style = "height: 350px; width: 50%;"></div>
+<script type = "module">
+    function initMap() {
+    const myLatLng = { lat: parseFloat("{{userLats}}"), lng: parseFloat("{{userLongs}}") };
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: myLatLng,
+    });
+
+    new google.maps.Marker({
+        position: myLatLng,
+        map,
+        title: "Hello World!",
+    });
     }
-</style>
+    window.initMap = initMap;
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{API_KEY}}&callback=initMap" defer>
+</script>
+
+<div>
+{% for list in filteredRestaurantList %}
+    <li>
+        <ul>
+            <a href="{% url 'set_selected_res' list.id %}">{{list.name}}</a>
+            {{list.address}}
+            {{list.cuisine}}
+        </ul>
+    </li>
+{% endfor %}
+</div>
+
+<script>
+    //dropdown menu with search script:
+    var style = document.createElement('style');
+    style.setAttribute("id","multiselect_dropdown_styles");
+    style.innerHTML = `
+    .multiselect-dropdown{
+    display: inline-block;
+    padding: 2px 5px 0px 5px;
+    border-radius: 4px;
+    border: solid 1px #ced4da;
+    background-color: white;
+    position: relative;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right .75rem center;
+    background-size: 16px 12px;
+    }
+    .multiselect-dropdown span.optext, .multiselect-dropdown span.placeholder{
+    margin-right:0.5em; 
+    margin-bottom:2px;
+    padding:1px 0; 
+    border-radius: 4px; 
+    display:inline-block;
+    }
+    .multiselect-dropdown span.optext{
+    background-color:lightgray;
+    padding:1px 0.75em; 
+    }
+    .multiselect-dropdown span.optext .optdel {
+    float: right;
+    margin: 0 -6px 1px 5px;
+    font-size: 0.7em;
+    margin-top: 2px;
+    cursor: pointer;
+    color: #666;
+    }
+    .multiselect-dropdown span.optext .optdel:hover { color: #c66;}
+    .multiselect-dropdown span.placeholder{
+    color:#ced4da;
+    }
+    .multiselect-dropdown-list-wrapper{
+    box-shadow: gray 0 3px 8px;
+    z-index: 100;
+    padding:2px;
+    border-radius: 4px;
+    border: solid 1px #ced4da;
+    display: none;
+    margin: -1px;
+    position: absolute;
+    top:0;
+    left: 0;
+    right: 0;
+    background: white;
+    }
+    .multiselect-dropdown-list-wrapper .multiselect-dropdown-search{
+    margin-bottom:5px;
+    }
+    .multiselect-dropdown-list{
+    padding:2px;
+    height: 15rem;
+    overflow-y:auto;
+    overflow-x: hidden;
+    }
+    .multiselect-dropdown-list::-webkit-scrollbar {
+    width: 6px;
+    }
+    .multiselect-dropdown-list::-webkit-scrollbar-thumb {
+    background-color: #bec4ca;
+    border-radius:3px;
+    }
+
+    .multiselect-dropdown-list div{
+    padding: 5px;
+    }
+    .multiselect-dropdown-list input{
+    height: 1.15em;
+    width: 1.15em;
+    margin-right: 0.35em;  
+    }
+    .multiselect-dropdown-list div.checked{
+    }
+    .multiselect-dropdown-list div:hover{
+    background-color: #ced4da;
+    }
+    .multiselect-dropdown span.maxselected {width:100%;}
+    .multiselect-dropdown-all-selector {border-bottom:solid 1px #999;}
+    `;
+    document.head.appendChild(style);
+
+    function MultiselectDropdown(options){
+    var config={
+        search:true,
+        height:'15rem',
+        placeholder:'',
+        txtSelected:'selected',
+        txtAll:'Toggle All',
+        txtRemove: 'Remove',
+        txtSearch:'Try searching for cuisine: Western, Japanese, Bubble Tea...',
+        ...options
+    };
+    function newEl(tag,attrs){
+        var e=document.createElement(tag);
+        if(attrs!==undefined) Object.keys(attrs).forEach(k=>{
+        if(k==='class') { Array.isArray(attrs[k]) ? attrs[k].forEach(o=>o!==''?e.classList.add(o):0) : (attrs[k]!==''?e.classList.add(attrs[k]):0)}
+        else if(k==='style'){  
+            Object.keys(attrs[k]).forEach(ks=>{
+            e.style[ks]=attrs[k][ks];
+            });
+        }
+        else if(k==='text'){attrs[k]===''?e.innerHTML='&nbsp;':e.innerText=attrs[k]}
+        else e[k]=attrs[k];
+        });
+        return e;
+    }
+
+    
+    document.querySelectorAll("select[multiple]").forEach((el,k)=>{
+        
+        var div=newEl('div',{class:'multiselect-dropdown',style:{width:config.style?.width??el.clientWidth+'px',padding:config.style?.padding??''}});
+        el.style.display='none';
+        el.parentNode.insertBefore(div,el.nextSibling);
+        var listWrap=newEl('div',{class:'multiselect-dropdown-list-wrapper'});
+        var list=newEl('div',{class:'multiselect-dropdown-list',style:{height:config.height}});
+        var search=newEl('input',{class:['multiselect-dropdown-search'].concat([config.searchInput?.class??'form-control']),style:{width:'100%',display:el.attributes['multiselect-search']?.value==='true'?'block':'none'},placeholder:config.txtSearch});
+        listWrap.appendChild(search);
+        div.appendChild(listWrap);
+        listWrap.appendChild(list);
+
+        el.loadOptions=()=>{
+        list.innerHTML='';
+        
+        if(el.attributes['multiselect-select-all']?.value=='true'){
+            var op=newEl('div',{class:'multiselect-dropdown-all-selector'})
+            var ic=newEl('input',{type:'checkbox'});
+            op.appendChild(ic);
+            op.appendChild(newEl('label',{text:config.txtAll}));
+    
+            op.addEventListener('click',()=>{
+            op.classList.toggle('checked');
+            op.querySelector("input").checked=!op.querySelector("input").checked;
+            
+            var ch=op.querySelector("input").checked;
+            list.querySelectorAll(":scope > div:not(.multiselect-dropdown-all-selector)")
+                .forEach(i=>{if(i.style.display!=='none'){i.querySelector("input").checked=ch; i.optEl.selected=ch}});
+    
+            el.dispatchEvent(new Event('change'));
+            });
+            ic.addEventListener('click',(ev)=>{
+            ic.checked=!ic.checked;
+            });
+            el.addEventListener('change', (ev)=>{
+            let itms=Array.from(list.querySelectorAll(":scope > div:not(.multiselect-dropdown-all-selector)")).filter(e=>e.style.display!=='none')
+            let existsNotSelected=itms.find(i=>!i.querySelector("input").checked);
+            if(ic.checked && existsNotSelected) ic.checked=false;
+            else if(ic.checked==false && existsNotSelected===undefined) ic.checked=true;
+            });
+    
+            list.appendChild(op);
+        }
+
+        Array.from(el.options).map(o=>{
+            var op=newEl('div',{class:o.selected?'checked':'',optEl:o})
+            var ic=newEl('input',{type:'checkbox',checked:o.selected});
+            op.appendChild(ic);
+            op.appendChild(newEl('label',{text:o.text}));
+
+            op.addEventListener('click',()=>{
+            op.classList.toggle('checked');
+            op.querySelector("input").checked=!op.querySelector("input").checked;
+            op.optEl.selected=!!!op.optEl.selected;
+            el.dispatchEvent(new Event('change'));
+            });
+            ic.addEventListener('click',(ev)=>{
+            ic.checked=!ic.checked;
+            });
+            o.listitemEl=op;
+            list.appendChild(op);
+        });
+        div.listEl=listWrap;
+
+        div.refresh=()=>{
+            div.querySelectorAll('span.optext, span.placeholder').forEach(t=>div.removeChild(t));
+            var sels=Array.from(el.selectedOptions);
+            if(sels.length>(el.attributes['multiselect-max-items']?.value??30)){
+            div.appendChild(newEl('span',{class:['optext','maxselected'],text:sels.length+' '+config.txtSelected}));          
+            }
+            else{
+            sels.map(x=>{
+                var c=newEl('span',{class:'optext',text:x.text, srcOption: x});
+                if((el.attributes['multiselect-hide-x']?.value !== 'true'))
+                c.appendChild(newEl('span',{class:'optdel',text:'🗙',title:config.txtRemove, onclick:(ev)=>{c.srcOption.listitemEl.dispatchEvent(new Event('click'));div.refresh();ev.stopPropagation();}}));
+
+                div.appendChild(c);
+            });
+            }
+            if(0==el.selectedOptions.length) div.appendChild(newEl('span',{class:'placeholder',text:el.attributes['placeholder']?.value??config.placeholder}));
+        };
+        div.refresh();
+        }
+        el.loadOptions();
+        
+        search.addEventListener('input',()=>{
+        list.querySelectorAll(":scope div:not(.multiselect-dropdown-all-selector)").forEach(d=>{
+            var txt=d.querySelector("label").innerText.toUpperCase();
+            d.style.display=txt.includes(search.value.toUpperCase())?'block':'none';
+        });
+        });
+
+        div.addEventListener('click',()=>{
+        div.listEl.style.display='block';
+        search.focus();
+        search.select();
+        });
+        
+        document.addEventListener('click', function(event) {
+        if (!div.contains(event.target)) {
+            listWrap.style.display='none';
+            div.refresh();
+        }
+        });    
+    });
+    }
+
+    window.addEventListener('load',()=>{
+    MultiselectDropdown(window.MultiselectDropdownOptions);
+    });
+</script>
+
 {% endblock content %}
