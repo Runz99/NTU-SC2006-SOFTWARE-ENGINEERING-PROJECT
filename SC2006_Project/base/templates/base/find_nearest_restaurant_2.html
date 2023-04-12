@@ -97,11 +97,16 @@
     </div>
 </form>
 
+{{mapsMarkerList|json_script:"mapsMarkerList"}}
+
 <div id= "map" style = "height: 350px; width: 50%;"></div>
+
 <script type = "module">
-    function initMap() {
+    var mapsMarkerList = JSON.parse(document.getElementById("mapsMarkerList").textContent);
+    console.log(mapsMarkerList)
+
     const myLatLng = { lat: parseFloat("{{userLats}}"), lng: parseFloat("{{userLongs}}") };
-    const map = new google.maps.Map(document.getElementById("map"), {
+    var map = new google.maps.Map(document.getElementById("map"), {
         zoom: 15,
         center: myLatLng,
     });
@@ -111,10 +116,27 @@
         map,
         title: "Hello World!",
     });
+    
+    var infowindow = new google.maps.InfoWindow();
+
+    var marker, i;
+
+    for(i = 0; i < mapsMarkerList.length; i++){
+        const LatLng = {lat: parseFloat(mapsMarkerList[i].lat), lng: parseFloat(mapsMarkerList[i].lon)}
+        console.log(LatLng)
+        marker = new google.maps.Marker({
+            position: LatLng,
+            map: map,
+        });
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+                infowindow.setContent(mapsMarkerList[i].name)
+                infowindow.open(map, marker);
+            }
+        })(marker, i));
     }
-    window.initMap = initMap;
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{API_KEY}}&callback=initMap" defer>
+    
+    
 </script>
 
 <div>
