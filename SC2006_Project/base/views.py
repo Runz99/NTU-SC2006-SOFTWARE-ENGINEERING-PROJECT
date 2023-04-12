@@ -129,7 +129,6 @@ def find_nearest_restaurant_1(request):
 #===========================================================================================================================================================
 # function that takes in user's cuisine preferences, which is optional (find_nearest_restaurant_3)
 def find_nearest_restaurant_2(request):
-    #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
     userLats = request.session['user_lats']
     userLongs =request.session['user_longs']
     userLatsStr = str(userLats)
@@ -189,10 +188,6 @@ def find_nearest_restaurant_2(request):
                         mapMarkersList.append({"id": eat.id,"name": eat.name, "lat": eat.lat, "lon": eat.lon})
                         # print(eat.distance, maxDist)
 
-        #cannot add object to session, needt to find a way to pass parameter I guess
-        # requests.session['filteredRestaurantList'] = filteredRestaurantList
-        
-        #do google maps thing
         context = {
                 'maxDist': maxDist,
                 'restrictionList':restrictionList,
@@ -207,12 +202,7 @@ def find_nearest_restaurant_2(request):
                 'restriction_options':restriction_options,
                 'mapsMarkerList': mapMarkersList,
             }
-        # return redirect('find_nearest_restaurant_3')
 
-    # else:
-    #     # cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
-    #     # print(cuisine_choices)
-    #     # context = {'cuisine_choice':cuisine_choices}
     return render(request, 'base/find_nearest_restaurant_2.html', context)
 
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -240,23 +230,7 @@ def set_selected_res(request, res_id):
     }
 
     return redirect('restaurant_info')
-#===========================================================================================================================================================
-# displays list of restaurants based on user's location and cuisine preferences
-def find_nearest_restaurant_3(request):
-    res = restaurant.objects.all()
-    user_lats = request.session.get('user_lats')
-    user_longs = request.session.get('user_longs')
-    top_10_res = None
 
-    for eat in res:
-        eat.distance = calculate_distance(user_lats, user_longs, float(eat.lat), float(eat.lon))
-        # Sort places by distance
-    sorted_res = sorted(res, key=lambda eat: eat.distance)
-    top_10_res = sorted_res[:10]
-    
-    #context = {'res': res, 'results' : results, 'data': location_data, 'lists':top_10_res} 
-    context = {'res': res, 'lists':top_10_res}  #pass res into html
-    return render(request, 'base/find_nearest_restaurant_3.html', context)
 
 #===========================================================================================================================================================
 
@@ -383,7 +357,6 @@ def delete_review(request, review_id):
     context = {'review': review_instance}
     return render(request, 'base/delete_review.html', context)
 
-# Change users' particulars
 # Change users' particulars
 @login_required(login_url='login')
 def change_particulars(request):

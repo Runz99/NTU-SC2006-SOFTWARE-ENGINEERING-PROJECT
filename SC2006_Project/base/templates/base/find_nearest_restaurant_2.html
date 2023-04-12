@@ -47,27 +47,6 @@
         {% for cuisine in cuisine_options %}
             <option value="{{cuisine}}" {% if newform or cuisine in cuisineList%} selected {% endif %}>{{cuisine}}</option>
         {% endfor %}
-        <!-- <option value="Alcohol" selected>Alcohol</option>
-        <option value="BBQ" selected>BBQ</option>
-        <option value="Bubble Tea" selected>Bubble Tea</option>
-        <option value="Chinese" selected>Chinese</option>
-        <option value="Dessert" selected>Dessert</option>
-        <option value="Fast Food" selected>Fast Food</option>
-        <option value="Ice Cream" selected>Ice Cream</option>
-        <option value="Indian" selected>Indian</option>
-        <option value="Indonesian" selected>Indonesian</option>
-        <option value="Italian" selected>Italian</option>
-        <option value="Japanese" selected>Japanese</option>
-        <option value="Korean" selected>Korean</option>
-        <option value="Local" selected>Local</option>
-        <option value="Malaysian" selected>Malaysian</option>
-        <option value="Pasta" selected>Pasta</option>
-        <option value="Pizza" selected>Pizza</option>
-        <option value="Taiwanese" selected>Taiwanese</option>
-        <option value="Thai" selected>Thai</option>
-        <option value="Western" selected>Western</option>
-        <option value="Seafood" selected>Seafood</option>
-        <option value="Steak" selected>Steak</option> -->
     </select>
 
     <label for="restrictions" class = "form_label">Dietary Restrictions:</label>
@@ -130,7 +109,7 @@
         });
         google.maps.event.addListener(marker, 'click', (function(marker, i) {
             return function() {
-                infowindow.setContent(mapsMarkerList[i].name)
+                infowindow.setContent( `<a href = "{% url 'set_selected_res' 69696969696969 %}"/`.replace(/69696969696969/g, mapsMarkerList[i].id) +`>`+ mapsMarkerList[i].name +'</a>')
                 infowindow.open(map, marker);
             }
         })(marker, i));
