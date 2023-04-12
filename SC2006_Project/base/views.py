@@ -279,6 +279,7 @@ def restaurant_info(request):
     update = restaurant.objects.get(address = selected_res.get('address')) #obtain correct restaurant in database
     update.restaurant_rating = average #update it
     update.save()
+    selected_res = update #get updated restaurant entry to display
     
 
     context = {'selected_res': selected_res, 'restaurantReview' : restaurantReview}
