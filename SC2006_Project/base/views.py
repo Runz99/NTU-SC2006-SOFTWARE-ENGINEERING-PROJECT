@@ -141,6 +141,7 @@ def find_nearest_restaurant_2(request):
     newform = True
     currentLocation = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+userLatsStr+","+userLongsStr+"&key="+API_KEY)
     currentLocationStr = currentLocation.json()['results'][0]['formatted_address']
+    mapMarkersList = []
 
     res = restaurant.objects.all()
     resultRestaurantList = []
@@ -167,8 +168,8 @@ def find_nearest_restaurant_2(request):
             'maxDist': maxDist,
             'restrictionList':restrictionList,
             'cuisineList': cuisineList,
+            'mapsMarkerList': mapMarkersList,
         }
-
 
     if request.method == "POST":
         #cuisine_choices = restaurant.objects.values_list('cuisine',flat=True)
@@ -185,6 +186,7 @@ def find_nearest_restaurant_2(request):
                     # print("cuisine list: "+ str(cuisineList))
                     if(eat.distance <= float(maxDist)): #within max distance
                         filteredRestaurantList.append(eat)
+                        mapMarkersList.append({"id": eat.id,"name": eat.name, "lat": eat.lat, "lon": eat.lon})
                         # print(eat.distance, maxDist)
 
         #cannot add object to session, needt to find a way to pass parameter I guess
@@ -203,6 +205,7 @@ def find_nearest_restaurant_2(request):
                 'filteredRestaurantList':filteredRestaurantList,
                 'cuisine_options':cuisine_options,
                 'restriction_options':restriction_options,
+                'mapsMarkerList': mapMarkersList,
             }
         # return redirect('find_nearest_restaurant_3')
 
