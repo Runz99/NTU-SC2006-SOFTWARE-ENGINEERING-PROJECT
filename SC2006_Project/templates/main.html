@@ -65,7 +65,11 @@ li {
         background-color: #3498db;
     }
 </style> -->
-
+<style>
+    footer{
+        color: rgb(146, 145, 145);
+    }
+</style>
 <body>
     <div class = "header">
         <nav class="navbar bg-body-tertiary">
@@ -87,7 +91,7 @@ li {
         </nav>
     <div class = "collapse" id = "navMenu">
         <div>
-            <ul class>
+            <ul class = navbar>
                 <li><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="{% url 'search_restaurant' %}">Search Restaurant</a></li>
                 <li><a href="{% url 'find_nearest_restaurant_1' %}">Find Nearest Restaurant</a></li>
@@ -106,8 +110,8 @@ li {
 
     {% endblock %}
 
-    <footer style="text-align: center;">
-        <p>&copy; 2023. A Project by WGT Bois. All rights reserved.</p> 
+    <footer style="text-align: center;" >
+        <p class ="footer">&copy; 2023. A Project by WGT Bois. All rights reserved.</p> 
     </footer>
 </body>
 </html>
