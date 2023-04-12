@@ -1,7 +1,12 @@
 {% extends 'main.html' %}
 
 {% block content %}
+{% load static %}
 <style>
+    body {
+        background-image: url("{% static '\food2_website.jpg' %}");
+        background-size: cover;
+    }
     h1 {
         font-size: 32px;
         font-weight: bold;
@@ -36,9 +41,10 @@
         text-align: center;
     }
 </style>
-<h1>Ready to eat?</h1>
+
 
 <div class="container">
+    <h1>Ready to eat?</h1>
     <div>
         Restaurant: {{selected_res.name}} <br>
         Address: {{selected_res.address}} <br>
