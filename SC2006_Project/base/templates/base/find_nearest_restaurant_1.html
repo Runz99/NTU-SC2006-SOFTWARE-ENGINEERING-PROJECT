@@ -1,5 +1,5 @@
 {% extends 'main.html' %}
-
+{% load static %}
 {% block content %}
 <style>
     h1 {
@@ -69,12 +69,7 @@
 
 
 
-    .container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 30px;
-        flex-direction: column;
-    }
+
 
     .row {
         margin: 10px 0;
@@ -87,6 +82,23 @@
         align-items: center;
         justify-content: center;
         text-align: center;
+    }
+
+    .container {
+        width: 100%;
+        height: 100%;
+        margin: auto;
+        padding-top: 10%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+    }
+
+    body {
+        background-image: url("{% static '\food2_website.jpg' %}");
+        background-size: cover;
     }
 </style>
 <div class="container">

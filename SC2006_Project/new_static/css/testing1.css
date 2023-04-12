@@ -1,5 +1,5 @@
-#navMenu ul{
-    margin-top:8px;
+#navMenu ul {
+    margin-top: 8px;
     padding-left: 0;
     list-style: none;
     text-decoration: none;
@@ -9,11 +9,11 @@
     font-size: 16px;
 }
 
-#navMenu li{
+#navMenu li {
     width: 100%;
 }
 
-#navMenu a{
+#navMenu a {
     width: 100%;
     display: block;
     text-align: center;
@@ -23,29 +23,35 @@
     padding-bottom: 8px;
 }
 
-#navMenu a:hover{
+#navMenu a:hover {
     background-color: rgb(78, 168, 105);
 }
 
-#navMenu a:active{
+#navMenu a:active {
     scale: 1.1;
 }
-li {
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 10px;
-  }
-  button[type="submit"] {
-        padding: 10px 20px;
-        background-color: #5dade2;
-        border: none;
-        border-radius: 5px;
-        color: white;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
 
-    button[type="submit"]:hover {
-        background-color: #3498db;
-    }
+li {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #5dade2;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #3498db;
+}
+
+.navbar{
+    background-color: #f8f8f8;
+}

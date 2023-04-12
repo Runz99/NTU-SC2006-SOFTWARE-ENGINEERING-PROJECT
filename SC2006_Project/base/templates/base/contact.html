@@ -1,4 +1,5 @@
 {% extends 'main.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -6,10 +7,21 @@
     
 
     .container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 30px;
-    }
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    padding-top: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+  }
+
+  body {
+    background-image: url("{% static '\food2_website.jpg' %}");
+    background-size: cover;
+  }
 
     h1 {
         font-size: 32px;

@@ -1,5 +1,5 @@
 {% extends 'main.html' %}
-
+{% load static %}
 {% block content %}
 <style>
 #cuisine_form {
@@ -7,6 +7,7 @@
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    padding-bottom: 15px;
 }
 
 .multi_dropdown {
@@ -26,59 +27,87 @@
     font-weight: bold;
 }
 
+#map{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 350px; 
+    width: 70%;
+    
+}
+.container {
+        width: 100%;
+        height: 100%;
+        margin: auto;
+        padding-top: 6%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+    }
+
+    body {
+        background-image: url("{% static '\food2_website.jpg' %}");
+        background-size: cover;
+    }
 
 </style>
 
-<div id = "currentLocation">
-    <div><b>Your current location is:</b> {{currentLocationStr}}</div>
-    <a class="btn btn-primary" href="/find-nearest-restaurant">Re-enter</a>
+<div class = "container">
+    <div id = "currentLocation">
+        <div><b>Your current location is:</b> {{currentLocationStr}}</div>
+        <a class="btn btn-primary" href="/find-nearest-restaurant">Re-enter</a>
+    </div>
+    
+    <form action="" method="POST" id = "cuisine_form">
+        {% csrf_token %}
+        <label for="cuisine_dropdown" class = "form_label">Include Cuisine Types:</label>
+        <select multiple 
+        multiselect-search="true" 
+        multiselect-select-all="true"
+        name="cuisines" 
+        id="cuisine_dropdown" 
+        class = "multi_dropdown"
+        >
+            {% for cuisine in cuisine_options %}
+                <option value="{{cuisine}}" {% if newform or cuisine in cuisineList%} selected {% endif %}>{{cuisine}}</option>
+            {% endfor %}
+        </select>
+    
+        <label for="restrictions" class = "form_label">Dietary Restrictions:</label>
+        <select multiple 
+        multiselect-search="true" 
+        multiselect-select-all="true"
+        name="restrictions" 
+        id="restrictions" 
+        class = "multi_dropdown"
+        >
+        {% for restriction in restriction_options %}
+            <option value="{{restriction}}" {% if restriction in restrictionList%} selected {% endif %}>{{restriction}}</option>
+        {% endfor %}
+        </select>
+    
+        <label for="distance_dropdown" class = "form_label">Find restaurants within:</label>
+        <select name="distance" id = "distance_dropdown">
+            <option value="0.5"{% if maxDist == "0.5" %} selected {% endif %}>500m</option>
+            <option value="1" {% if newform or maxDist == "1" %} selected {% endif %}>1km</option>
+            <option value="2"{% if maxDist == "2" %} selected {% endif %}>2km</option>
+            <option value="3"{% if maxDist == "3" %} selected {% endif %}>3km</option>
+            <option value="4"{% if maxDist == "4" %} selected {% endif %}>4km</option>
+            <option value="5"{% if maxDist == "5" %} selected {% endif %}>5km</option>
+        </select>
+        <div>
+            <button type="Submit" class = "formbutton btn btn-primary">Submit</button>
+        </div>
+    </form>
+    <div id= "map">{{mapsMarkerList|json_script:"mapsMarkerList"}}</div>
 </div>
 
-<form action="" method="POST" id = "cuisine_form">
-    {% csrf_token %}
-    <label for="cuisine_dropdown" class = "form_label">Include Cuisine Types:</label>
-    <select multiple 
-    multiselect-search="true" 
-    multiselect-select-all="true"
-    name="cuisines" 
-    id="cuisine_dropdown" 
-    class = "multi_dropdown"
-    >
-        {% for cuisine in cuisine_options %}
-            <option value="{{cuisine}}" {% if newform or cuisine in cuisineList%} selected {% endif %}>{{cuisine}}</option>
-        {% endfor %}
-    </select>
 
-    <label for="restrictions" class = "form_label">Dietary Restrictions:</label>
-    <select multiple 
-    multiselect-search="true" 
-    multiselect-select-all="true"
-    name="restrictions" 
-    id="restrictions" 
-    class = "multi_dropdown"
-    >
-    {% for restriction in restriction_options %}
-        <option value="{{restriction}}" {% if restriction in restrictionList%} selected {% endif %}>{{restriction}}</option>
-    {% endfor %}
-    </select>
 
-    <label for="distance_dropdown" class = "form_label">Find restaurants within:</label>
-    <select name="distance" id = "distance_dropdown">
-        <option value="0.5"{% if maxDist == "0.5" %} selected {% endif %}>500m</option>
-        <option value="1" {% if newform or maxDist == "1" %} selected {% endif %}>1km</option>
-        <option value="2"{% if maxDist == "2" %} selected {% endif %}>2km</option>
-        <option value="3"{% if maxDist == "3" %} selected {% endif %}>3km</option>
-        <option value="4"{% if maxDist == "4" %} selected {% endif %}>4km</option>
-        <option value="5"{% if maxDist == "5" %} selected {% endif %}>5km</option>
-    </select>
-    <div>
-        <button type="Submit" class = "formbutton btn btn-primary">Submit</button>
-    </div>
-</form>
 
-{{mapsMarkerList|json_script:"mapsMarkerList"}}
 
-<div id= "map" style = "height: 350px; width: 50%;"></div>
 
 <script type = "module">
     var mapsMarkerList = JSON.parse(document.getElementById("mapsMarkerList").textContent);
