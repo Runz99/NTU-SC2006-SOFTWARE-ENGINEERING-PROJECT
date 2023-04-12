@@ -214,6 +214,7 @@ def set_selected_res(request, res_id):
         'id': selected_res.id,
         'name': selected_res.name,
         'address': selected_res.address,
+        'restaurant_rating' : selected_res.restaurant_rating,
         'lat': selected_res.lat,
         'lon': selected_res.lon,
         'cuisine': selected_res.cuisine
@@ -257,6 +258,18 @@ def restaurant_info(request):
     selected_res = request.session.get('selected_res')
     #chosen_res = restaurant.objects.get(id = res_id)
     restaurantReview = review.objects.filter(address = selected_res.get('id'))
+    sum = 0
+    for reviews in restaurantReview:
+        sum+= int(reviews.restaurant_rating) #find total review rating
+    if len(restaurantReview) == 0: #if no reviews
+        average = 0 #give it a 0
+    else:
+        average = sum/len(restaurantReview) #get average review rating
+        average = str(average)[:4] #set it to 2 dp
+    update = restaurant.objects.get(address = selected_res.get('address')) #obtain correct restaurant in database
+    update.restaurant_rating = average #update it
+    update.save()
+    
 
     context = {'selected_res': selected_res, 'restaurantReview' : restaurantReview}
     return render(request, 'base/restaurant.html', context)
