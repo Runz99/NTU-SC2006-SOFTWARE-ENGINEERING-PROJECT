@@ -255,36 +255,6 @@ def leaveReviews(request):
             return render(request, 'base/leave_reviews.html', {'review' :form})
     return render(request, 'base/leave_reviews.html', {'review' :form})
 
-#===========================================================================================================================================================
-
-def restaurant_info(request):
-    '''
-    Gets information of restaurant that user clicked on and renders it in restaurant.html
-
-    param request: Contains information of restaurant clicked
-    returns: renders restaurant.html with specified restaurant's info and restaurant's reviews
-
-    '''
-    selected_res = request.session.get('selected_res')
-    #chosen_res = restaurant.objects.get(id = res_id)
-    restaurantReview = review.objects.filter(address = selected_res.get('id'))
-    sum = 0
-    for reviews in restaurantReview:
-        sum+= int(reviews.restaurant_rating) #find total review rating
-    if len(restaurantReview) == 0: #if no reviews
-        average = 0 #give it a 0
-    else:
-        average = sum/len(restaurantReview) #get average review rating
-        average = str(average)[:4] #set it to 2 dp
-    update = restaurant.objects.get(address = selected_res.get('address')) #obtain correct restaurant in database
-    update.restaurant_rating = average #update it
-    update.save()
-    selected_res = update #get updated restaurant entry to display
-    
-
-    context = {'selected_res': selected_res, 'restaurantReview' : restaurantReview}
-    return render(request, 'base/restaurant.html', context)
-
 
 #===========================================================================================================================================================
 
@@ -458,5 +428,68 @@ def add_restaurant(request):
     else:
         form = RestaurantForm()
     return render(request, 'base/add_restaurant.html', {'form': form})
+
+
+
+#===========================================================================================================================================================
+
+import requests
+import json
+
+ONEMAP_API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEwMTgxLCJ1c2VyX2lkIjoxMDE4MSwiZW1haWwiOiJ4dWp1bnpoZTAxMTNAb3V0bG9vay5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2ODEzMjA2ODIsImV4cCI6MTY4MTc1MjY4MiwibmJmIjoxNjgxMzIwNjgyLCJqdGkiOiIyNzY2MmZjNGMxNDE0NWVkYjA0MmUzYjcxYzYyYzdjNiJ9.3KvTDjidt7hNxb4hD-JmYvcY3I1eOYsL5zMfD59OGqY'
+
+def restaurant_info(request):
+    '''
+    Gets information of restaurant that user clicked on and renders it in restaurant.html
+
+    param request: Contains information of restaurant clicked
+    returns: renders restaurant.html with specified restaurant's info and restaurant's reviews
+
+    '''
+    selected_res = request.session.get('selected_res')
+    #chosen_res = restaurant.objects.get(id = res_id)
+    restaurantReview = review.objects.filter(address = selected_res.get('id'))
+    sum = 0
+    for reviews in restaurantReview:
+        sum+= int(reviews.restaurant_rating) #find total review rating
+    if len(restaurantReview) == 0: #if no reviews
+        average = 0 #give it a 0
+    else:
+        average = sum/len(restaurantReview) #get average review rating
+        average = str(average)[:4] #set it to 2 dp
+    update = restaurant.objects.get(address = selected_res.get('address')) #obtain correct restaurant in database
+    update.restaurant_rating = average #update it
+    update.save()
+    selected_res = update #get updated restaurant entry to display
+    
+    nearest_carparks = get_nearest_carparks(selected_res.lat, selected_res.lon, ONEMAP_API_KEY)
+    for carpark in nearest_carparks:
+        carpark['distance'] = calculate_distance(float(selected_res.lat), float(selected_res.lon), float(carpark['LATITUDE']), float(carpark['LONGITUDE']))
+
+    context = {'selected_res': selected_res, 'restaurantReview': restaurantReview, 'nearest_carparks': nearest_carparks}
+    return render(request, 'base/restaurant.html', context)
+
+def get_nearest_carparks(lat, lon, api_key):
+    try:
+        base_url = "https://developers.onemap.sg/commonapi/search?"
+        query = f"searchVal=Car%20Park&returnGeom=Y&getAddrDetails=Y&pageNum=1"
+        url = f"{base_url}{query}&lat={lat}&lng={lon}&APIKey={api_key}"
+        response = requests.get(url)
+        data = response.json()
+
+        if data['found'] > 0:
+            nearest_carparks = data['results'][:5]  # Get the top 5 nearest carparks
+            return nearest_carparks
+        
+        else:
+            return []
+
+    except json.JSONDecodeError:
+        print("Error parsing JSON response from OneMap API")
+        return []
+    except Exception as e:
+        print("Error occurred while fetching nearest carparks:", e)
+        return []
+
 
 
