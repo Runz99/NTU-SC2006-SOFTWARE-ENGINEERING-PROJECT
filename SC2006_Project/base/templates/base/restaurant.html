@@ -64,31 +64,47 @@
     <a class="acc" href="{% url 'leaveReview' %}">Leave your own reviews here!</a>
     <hr>
     <h3>Need some help? We'll show you how to get there!</h3>
+        <h3>Nearest Carparks</h3>
+        {% for carpark in nearest_carparks %}
+            <p>Type: {{carpark.BUILDING}}</p>
+            <p>Address: {{carpark.ADDRESS}}</p>
+            <p>Distance: {{carpark.distance|floatformat:2}} km</p>
+            <button class="get-directions" data-lat="{{carpark.LATITUDE}}" data-lon="{{carpark.LONGITUDE}}">Get directions to this carpark</button>
+        {% endfor %}
+
+
     <a href="https://maps.google.com" id=aMap data-lat='{{selected_res.lat}}' data-lon='{{selected_res.lon}}'>Get
         directions here!</a>
     <p></p>
-    <a href="https://maps.google.com" id=aCarpark data-lat='{{selected_res.lat}}' data-lon='{{selected_res.lon}}'>Get
+    <a href="https://maps.google.com" id=aCarpark data-lat='{{carpark.LATITUDE}}' data-lon='{{carpark.LONGITUDE}}'>Get
         nearby carparks here!</a>
 
 
 </div>
 
 <script>
-    coord = document.getElementById("aMap");
-    lat = coord.dataset.lat;
-    lon = coord.dataset.lon;
-    function getMapsUrl() {
-        link = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lon
-        return link;
+    function openDirections(lat, lon) {
+        var url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+        window.open(url, '_blank');
     }
-    function getCarparksUrl() {
-        link = "https://www.google.com/maps/search/" + lat + "+" + lon + "+" + "carpark/@" + lat + "," + lon + "," + "17z/"
-        return link;
-    }
-    document.getElementById("aMap").href = getMapsUrl();
-    document.getElementById("aCarpark").href = getCarparksUrl();
+
+    document.querySelectorAll('.get-directions').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var lat = parseFloat(this.dataset.lat);
+            var lon = parseFloat(this.dataset.lon);
+            openDirections(lat, lon);
+        });
+    });
 </script>
 
 
 
 {% endblock content %}
+
+
+
+
+
+
+
+
