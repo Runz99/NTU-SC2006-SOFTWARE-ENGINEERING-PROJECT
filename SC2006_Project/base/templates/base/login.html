@@ -2,7 +2,13 @@
 
 {% block content %}
 
+{% load static %}
 <style>
+    body {
+        background-image: url("{% static '\food2_website.jpg' %}");
+        background-size: cover;
+    }
+
     .container {
         display: flex;
         justify-content: center;
