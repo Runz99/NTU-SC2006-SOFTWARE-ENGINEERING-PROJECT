@@ -475,8 +475,6 @@ def restaurant_info(request):
     returns: renders restaurant.html with specified restaurant's info and restaurant's reviews
 
     '''
-    cuisineList = [n.strip() for n in ast.literal_eval(selected_res['cuisine'])]
-
     selected_res = request.session.get('selected_res')
     cuisineList = [n.strip() for n in ast.literal_eval(selected_res['cuisine'])]
 
