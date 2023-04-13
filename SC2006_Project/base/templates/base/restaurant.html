@@ -97,12 +97,14 @@
     <div id="carparks">
         {% for carpark in nearest_carparks %}
             <div class="carpark">
-                <p>Type: {{carpark.BUILDING}}</p>
-                <p>Address: {{carpark.ADDRESS}}</p>
+                <p>Type: {{carpark.name}}</p>
+                <p>Address: {{carpark.vicinity}}</p>
                 <p>Distance: {{carpark.distance|floatformat:2}} km</p>
-                <button class="get-directions" data-lat="{{carpark.LATITUDE}}" data-lon="{{carpark.LONGITUDE}}">Get directions to this carpark</button>
+                <button class="get-directions" data-lat="{{carpark.geometry.location.lat}}" data-lon="{{carpark.geometry.location.lng}}">Get directions to this carpark</button>
             </div>
         {% endfor %}
+
+
     </div>
 
 
@@ -114,7 +116,7 @@
 
 <script>
     function openDirections(lat, lon) {
-        var url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+        var url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&key={{API_KEY}}`;
         window.open(url, '_blank');
     }
 
