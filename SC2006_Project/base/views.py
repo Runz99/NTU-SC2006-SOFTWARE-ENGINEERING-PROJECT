@@ -475,9 +475,11 @@ def restaurant_info(request):
     returns: renders restaurant.html with specified restaurant's info and restaurant's reviews
 
     '''
+    
+
     selected_res = request.session.get('selected_res')
     cuisineList = [n.strip() for n in ast.literal_eval(selected_res['cuisine'])]
-
+    #chosen_res = restaurant.objects.get(id = res_id)
 
     update = updateReviewRating(selected_res)
     selected_res = update[0] #get updated restaurant entry to display
