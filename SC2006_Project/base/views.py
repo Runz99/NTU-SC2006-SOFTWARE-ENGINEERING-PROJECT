@@ -26,6 +26,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 import ast
+import random
 API_KEY = settings.GOOGLE_API_KEY
 
 
@@ -202,6 +203,12 @@ def find_nearest_restaurant_2(request):
                 'restriction_options':restriction_options,
                 'mapsMarkerList': mapMarkersList,
             }
+        if request.POST.get('action') == 'randomise':
+            if len(filteredRestaurantList) == 0:
+                messages.error(request, 'No restaurants found!')
+            else:
+                chosenRestaurant = random.choice(filteredRestaurantList)
+                return redirect('set_selected_res', res_id=chosenRestaurant.id)
 
     return render(request, 'base/find_nearest_restaurant_2.html', context)
 

@@ -44,13 +44,37 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
-
     }
 
-    body {
-        background-image: url("{% static '\food2_website.jpg' %}");
-        background-size: cover;
-    }
+#resultsListContainer{
+    max-width: 1000px;
+    margin-top: 16px;
+}
+
+body {
+    background-image: url("{% static '\food2_website.jpg' %}");
+    background-size: cover;
+}
+
+td a { 
+   display: block; 
+   padding: 8px;
+   text-decoration: none;
+   color:black
+}
+
+tr.resList:hover{
+    scale: 1.03;
+}
+
+tr.resList:active{
+    scale: 1.01;
+}
+
+ul .messages{
+    list-style-type: none;
+}
+
 
 </style>
 
@@ -98,14 +122,11 @@
             <option value="5"{% if maxDist == "5" %} selected {% endif %}>5km</option>
         </select>
         <div>
-            <button type="Submit" class = "formbutton btn btn-primary">Submit</button>
+            <button type="Submit" name = "action" value = "submit" class = "formbutton btn btn-primary">Search</button>
+            <button type="Submit" name = "action" value = "randomise" class = "formbutton btn btn-primary">I'm feeling lucky</button>
         </div>
     </form>
     <div id= "map">{{mapsMarkerList|json_script:"mapsMarkerList"}}</div>
-</div>
-
-
-
 
 
 
@@ -147,16 +168,51 @@
     
 </script>
 
-<div>
-{% for list in filteredRestaurantList %}
-    <li>
-        <ul>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if not newform %}
+<div id = "resultsListContainer">
+<table class = "table table-hover table-sm opacity-100 table-light">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Features</th>
+            <th scope="col">Rating</th>
+        </tr>
+    </thead>
+    {% for list in filteredRestaurantList %}
+    <tr class = "resList">
+        <td>
             <a href="{% url 'set_selected_res' list.id %}">{{list.name}}</a>
+        </td>
+        <td>
+            <a href="{% url 'set_selected_res' list.id %}">{{list.cuisine}}</a>
+            
+        </td>
+        <td>
+            <a href="{% url 'set_selected_res' list.id %}">TBD</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+</div>
+<!-- {% for list in filteredRestaurantList %}
+    <li id = "resultsList">
+        <ul>
+            <a href="{% url 'set_selected_res' list.id %}">/a>
             {{list.address}}
             {{list.cuisine}}
         </ul>
     </li>
-{% endfor %}
+{% endfor %} -->
 </div>
 
 <script>
