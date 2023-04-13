@@ -26,7 +26,6 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 import ast
-import random
 API_KEY = settings.GOOGLE_API_KEY
 
 
@@ -141,6 +140,7 @@ def find_nearest_restaurant_2(request):
     newform = True
     currentLocation = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+userLatsStr+","+userLongsStr+"&key="+API_KEY)
     currentLocationStr = currentLocation.json()['results'][0]['formatted_address']
+    mapMarkersList = []
 
     res = restaurant.objects.all()
     resultRestaurantList = []
@@ -183,7 +183,7 @@ def find_nearest_restaurant_2(request):
                 if(len(set(eatTags).intersection(set(cuisineList))) != 0): #meets at least one cuisine
                     # print("cuisine list: "+ str(cuisineList))
                     if(eat.distance <= float(maxDist)): #within max distance
-                        filteredRestaurantList.append({"id": eat.id,
+                         filteredRestaurantList.append({"id": eat.id,
                                                     "name": eat.name,
                                                     "lat": eat.lat, 
                                                     "lon": eat.lon,
@@ -239,6 +239,22 @@ def set_selected_res(request, res_id):
     }
 
     return redirect('restaurant_info')
+
+def set_selected_res2(res_id):
+    selected_res = restaurant.objects.get(id=res_id)
+
+    selected_res = {
+        'id': selected_res.id,
+        'name': selected_res.name,
+        'address': selected_res.address,
+        'restaurant_rating' : selected_res.restaurant_rating,
+        'lat': selected_res.lat,
+        'lon': selected_res.lon,
+        'cuisine': selected_res.cuisine
+    }
+
+    return selected_res
+
 #===========================================================================================================================================================
 
 @login_required(login_url='login')
@@ -250,11 +266,14 @@ def leaveReviews(request):
         form = reviewForm(request.POST) 
         if form.is_valid():
             addressV = form.cleaned_data['address']
+            selected_res = restaurant.objects.filter(address = addressV)[0].id
+            selected_res = set_selected_res2(selected_res)
             restaurant_reviewV = form.cleaned_data['restaurant_review']
             restaurant_ratingV = form.cleaned_data['restaurant_rating']
             userReview = review(user_name = user_nameV, address = addressV, restaurant_review = restaurant_reviewV, restaurant_rating = restaurant_ratingV)
             userReview.save()
             form = reviewForm()
+            updateReviewRating(selected_res)
             messages.success(request, 'Review submission successful! Thank you!')
             return render(request, 'base/leave_reviews.html', {'review' :form})
         else:
@@ -310,9 +329,12 @@ def edit_review(request, review_id):
         form = reviewForm(request.POST)
         if form.is_valid():
             rev.address = form.cleaned_data['address']
+            selected_res = restaurant.objects.filter(address = rev.address)[0].id
+            selected_res = set_selected_res2(selected_res)
             rev.restaurant_review = form.cleaned_data['restaurant_review']
             rev.restaurant_rating = form.cleaned_data['restaurant_rating']
             rev.save()
+            updateReviewRating(selected_res)
             return redirect('view_my_own_reviews')
     else:
         initial_data = {
@@ -456,6 +478,25 @@ def restaurant_info(request):
     selected_res = request.session.get('selected_res')
     cuisineList = [n.strip() for n in ast.literal_eval(selected_res['cuisine'])]
 
+
+    update = updateReviewRating(selected_res)
+    selected_res = update[0] #get updated restaurant entry to display
+    restaurantReview = update[1]
+    
+    nearest_carparks = get_nearest_carparks(selected_res.lat, selected_res.lon, ONEMAP_API_KEY)
+    for carpark in nearest_carparks:
+        carpark['distance'] = calculate_distance(float(selected_res.lat), float(selected_res.lon), float(carpark['LATITUDE']), float(carpark['LONGITUDE']))
+    nearest_carparks.sort(key=lambda carpark: carpark['distance'])  # Sort by distance
+    nearest_carparks = nearest_carparks[:5]  # Get the top 5 nearest carparks
+    
+    context = {'selected_res': selected_res, 
+               'restaurantReview': restaurantReview, 
+               'nearest_carparks': nearest_carparks,
+               'cuisineList': cuisineList}
+    
+    return render(request, 'base/restaurant.html', context)
+
+def updateReviewRating(selected_res):
     restaurantReview = review.objects.filter(address = selected_res.get('id'))
     sum = 0
     for reviews in restaurantReview:
@@ -468,18 +509,10 @@ def restaurant_info(request):
     update = restaurant.objects.get(address = selected_res.get('address')) #obtain correct restaurant in database
     update.restaurant_rating = average #update it
     update.save()
-    selected_res = update #get updated restaurant entry to display
-    
-    nearest_carparks = get_nearest_carparks(selected_res.lat, selected_res.lon, ONEMAP_API_KEY)
-    for carpark in nearest_carparks:
-        carpark['distance'] = calculate_distance(float(selected_res.lat), float(selected_res.lon), float(carpark['LATITUDE']), float(carpark['LONGITUDE']))
-
-    context = {'selected_res': selected_res, 
-               'restaurantReview': restaurantReview, 
-               'nearest_carparks': nearest_carparks,
-               'cuisineList': cuisineList}
-    
-    return render(request, 'base/restaurant.html', context)
+    toReturn = []
+    toReturn.append(update)
+    toReturn.append(restaurantReview)
+    return toReturn
 
 def get_nearest_carparks(lat, lon, api_key):
     try:
@@ -490,7 +523,8 @@ def get_nearest_carparks(lat, lon, api_key):
         data = response.json()
 
         if data['found'] > 0:
-            nearest_carparks = data['results'][:5]  # Get the top 5 nearest carparks
+            if data['found'] > 0:
+                nearest_carparks = data['results']  # Get all the carparks
             return nearest_carparks
         
         else:
