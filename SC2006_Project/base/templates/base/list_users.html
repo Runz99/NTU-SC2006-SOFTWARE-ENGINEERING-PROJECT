@@ -34,6 +34,20 @@
       margin: 10px;
       padding:10px;
     }
+    .acc {
+      padding: 5px 10px;
+      background-color: #5dade2;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      text-decoration: none; /* added to remove underline */
+    }
+
+    .acc:hover {
+      background-color: #3498db;
+    }
 </style>
 <div class ="container">
   <h1>User List</h1>
@@ -53,9 +67,9 @@
           <td>{{ user.username }}</td>
           <td>{{ user.email }}</td>
           <td>
-            <a href="{% url 'delete_users' user.id %}">Delete User</a> |
-            <a href="{% url 'delete_reviews' user.id %}">Delete Reviews</a> |
-            <a href="{% url 'update_user_account' user.id %}">Update Account</a>
+            <a class="acc" href="{% url 'delete_users' user.id %}">Delete User</a> |
+            <a class="acc" href="{% url 'delete_reviews' user.id %}">Delete Reviews</a> |
+            <a class="acc" href="{% url 'update_user_account' user.id %}">Update Account</a>
           </td>
         </tr>
       {% endfor %}
