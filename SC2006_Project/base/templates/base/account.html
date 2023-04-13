@@ -59,20 +59,23 @@
   }
 </style>
 <div class="container">
-  <h1>Account Page</h1>
-  Username: {{request.user.username}}</br>
-  <br>First name: {{request.user.first_name}}</br>
-  <br>Last name: {{request.user.last_name}}</br>
-  <br>Email: {{request.user.email}}</br>
+  <div style = "margin-bottom: 16px;">
+    <h1>Account Page</h1>
+    Username: {{request.user.username}}</br>
+    <br>First name: {{request.user.first_name}}</br>
+    <br>Last name: {{request.user.last_name}}</br>
+    <br>Email: {{request.user.email}}</br>
+  </div>
+  
   <div class="row">
     <a class="acc" href="{% url 'change_particulars' %}">
-      <p class="para">Change Particulars</p>
+      <div class="para">Change Particulars</div>
     </a>
   </div>
   {% if not request.user.is_staff %}
   <div class="row">
     <a class="acc" href="{% url 'view_my_own_reviews' %}">
-      <p class="para">View My Own Reviews</p>
+      <div class="para">View My Own Reviews</div>
     </a>
   </div>
   {% endif %}
@@ -80,12 +83,12 @@
   {% if request.user.is_staff %}
   <div class="row">
     <a class="acc" href="{% url 'list_restaurants' %}">
-      <p class="para">Manage Restaurants</p>
+      <div class="para">Manage Restaurants</div>
     </a>
   </div>
   <div class="row">
     <a class="acc" href="{% url 'list_users' %}">
-      <p class="para">Manage Users</p>
+      <div class="para">Manage Users</div>
     </a>
   </div>
   {% endif %}
