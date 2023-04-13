@@ -138,6 +138,13 @@
         });
     });
 
+    document.getElementById('aMap').addEventListener('click', function(event){
+        event.preventDefault();
+        var lat = parseFloat(this.dataset.lat);
+        var lon = parseFloat(this.dataset.lon);
+        openDirections(lat,lon)
+    })
+
 
     document.getElementById('aCarpark').addEventListener('click', function(event) {
         event.preventDefault();  // Prevent the default link behavior
