@@ -221,7 +221,9 @@ tr.resList:active{
     {% endfor %}
 </table>
 {% else %}
+{% if not newform %}
 <div style = "margin-top: 16px;"><h3>No results found. Please update your filters and try again.</h3></div>
+{% endif %}
 {% endif %}
 
 </div>

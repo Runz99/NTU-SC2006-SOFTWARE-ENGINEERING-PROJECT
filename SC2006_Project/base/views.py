@@ -266,7 +266,7 @@ def set_selected_res2(res_id):
 
 @login_required(login_url='login')
 def leaveReviews(request):
-    form = reviewForm(request.POST or None)
+    form = reviewForm(request.POST or None, initial= {'address': request.session['selected_res']['id']})
     
     if request.method == 'POST':
         user_nameV = request.user.username
