@@ -96,7 +96,6 @@ def searchRestaurant(request):
 # function that takes in user location and saves it, redirect to filter page (find_nearest_restaurant_1)
 def find_nearest_restaurant_1(request):
     location_data = None
-    res = restaurant.objects.all() #get all restaurant objects in database
     user_lats = None
     user_longs = None
 
@@ -122,7 +121,7 @@ def find_nearest_restaurant_1(request):
         request.session['user_longs'] = user_longs
         return redirect('find_nearest_restaurant_2')
     
-    context = {'res': res,'data': location_data}  #pass res into html
+    context = {'data': location_data}  #pass res into html
     return render(request, 'base/find_nearest_restaurant_1.html', context)
 
 
@@ -168,7 +167,6 @@ def find_nearest_restaurant_2(request):
             'maxDist': maxDist,
             'restrictionList':restrictionList,
             'cuisineList': cuisineList,
-            'mapsMarkerList': mapMarkersList,
         }
 
     if request.method == "POST":
@@ -185,8 +183,13 @@ def find_nearest_restaurant_2(request):
                 if(len(set(eatTags).intersection(set(cuisineList))) != 0): #meets at least one cuisine
                     # print("cuisine list: "+ str(cuisineList))
                     if(eat.distance <= float(maxDist)): #within max distance
-                        filteredRestaurantList.append(eat)
-                        mapMarkersList.append({"id": eat.id,"name": eat.name, "lat": eat.lat, "lon": eat.lon})
+                         filteredRestaurantList.append({"id": eat.id,
+                                                    "name": eat.name,
+                                                    "lat": eat.lat, 
+                                                    "lon": eat.lon,
+                                                    "distance": eat.distance,
+                                                    "cuisine": ", ".join(eatTags)
+                                                    })
                         # print(eat.distance, maxDist)
 
         context = {
@@ -201,7 +204,6 @@ def find_nearest_restaurant_2(request):
                 'filteredRestaurantList':filteredRestaurantList,
                 'cuisine_options':cuisine_options,
                 'restriction_options':restriction_options,
-                'mapsMarkerList': mapMarkersList,
             }
         if request.POST.get('action') == 'randomise':
             if len(filteredRestaurantList) == 0:
@@ -476,7 +478,8 @@ def restaurant_info(request):
     cuisineList = [n.strip() for n in ast.literal_eval(selected_res['cuisine'])]
 
     selected_res = request.session.get('selected_res')
-    #chosen_res = restaurant.objects.get(id = res_id)
+    cuisineList = [n.strip() for n in ast.literal_eval(selected_res['cuisine'])]
+
 
     update = updateReviewRating(selected_res)
     selected_res = update[0] #get updated restaurant entry to display
@@ -488,7 +491,13 @@ def restaurant_info(request):
     nearest_carparks.sort(key=lambda carpark: carpark['distance'])  # Sort by distance
     nearest_carparks = nearest_carparks[:5]  # Get the top 5 nearest carparks
     
-    context = {'selected_res': selected_res, 'restaurantReview': restaurantReview, 'nearest_carparks': nearest_carparks, 'cuisineList': cuisineList}
+
+    context = {'selected_res': selected_res, 
+               'restaurantReview': restaurantReview, 
+               'nearest_carparks': nearest_carparks,
+               'cuisineList': cuisineList}
+    
+
     return render(request, 'base/restaurant.html', context)
 
 def updateReviewRating(selected_res):
