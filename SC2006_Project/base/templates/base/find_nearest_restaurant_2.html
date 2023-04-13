@@ -160,7 +160,7 @@ ul {
         });
         google.maps.event.addListener(marker, 'click', (function(marker, i) {
             return function() {
-                infowindow.setContent( `<a href = "{% url 'set_selected_res' 69696969696969 %}"/`.replace(/69696969696969/g, mapsMarkerList[i].id) +`>`+ mapsMarkerList[i].name +'</a>')
+                infowindow.setContent( `<a href = "{% url 'set_selected_res' 69696969696969 %}"/`.replace(/69696969696969/g, filteredRestaurantList[i].id) +`>`+ filteredRestaurantList[i].name +'</a>')
                 infowindow.open(map, marker);
             }
         })(marker, i));

@@ -79,25 +79,30 @@
           <div style = "margin: 16px 0px;">There are no reviews for this restaurant at the moment. Be the first one!</div>
     {% endif %}
 
+    {% if restaurantReview %}
+    {% for review in restaurantReview %}
+        <p>Username: {{review.user_name}}</p>
+        <p>Review: {{review.restaurant_review}}</p>
+        <p>Rating: {{review.restaurant_rating}}/5</p>
+        <p>------------------------------------</p>
+    {% endfor %}
+    {% else %}
+      <div style = "margin: 16px 0px;">There are no reviews for this restaurant at the moment. Be the first one!</div>
+    {% endif %}
+    
     <a class="acc" href="{% url 'leaveReview' %}">Leave your own reviews here!</a>
     <hr>
     <h3>Need some help? We'll show you how to get there!</h3>
         <h3>Nearest Carparks</h3>
-        <div id="carparks">
-            {% for carpark in nearest_carparks %}
-                <div class="carpark">
-                    <p>Type: {{carpark.BUILDING}}</p>
-                    <p>Address: {{carpark.ADDRESS}}</p>
-                    <p>Distance: {{carpark.distance|floatformat:2}} km</p>
-                    <button class="get-directions" data-lat="{{carpark.LATITUDE}}" data-lon="{{carpark.LONGITUDE}}">Get directions to this carpark</button>
-                </div>
-            {% endfor %}
-        </div>
+        {% for carpark in nearest_carparks %}
+            <p>Type: {{carpark.BUILDING}}</p>
+            <p>Address: {{carpark.ADDRESS}}</p>
+            <p>Distance: {{carpark.distance|floatformat:2}} km</p>
+            <button class="get-directions" data-lat="{{carpark.LATITUDE}}" data-lon="{{carpark.LONGITUDE}}">Get directions to this carpark</button>
+        {% endfor %}
 
-    <a href="https://maps.google.com" id=aMap data-lat='{{selected_res.lat}}' data-lon='{{selected_res.lon}}'>Get
-        directions here!</a>
     <p></p>
-    <a href="https://maps.google.com" id=aCarpark data-lat='{{nearest_carparks.LATITUDE}}' data-lon='{{nearest_carparks.LONGITUDE}}'>Get
+    <a href="https://maps.google.com" id=aCarpark data-lat='{{carpark.LATITUDE}}' data-lon='{{carpark.LONGITUDE}}'>Get
         nearby carparks here!</a>
 
 
