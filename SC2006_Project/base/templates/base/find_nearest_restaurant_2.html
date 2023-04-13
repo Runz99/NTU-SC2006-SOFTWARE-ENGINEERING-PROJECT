@@ -82,6 +82,25 @@ tr.resList:active{
     scale: 1.01;
 }
 
+.formbutton {
+    padding: 10px 20px;
+    background-color: #5dade2;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 20px;
+    text-decoration: none;
+}
+
+.formbutton:hover {
+    background-color: #3498db;
+}
+
+.form_label {
+    font-weight: bold;
+}
 
 
 </style>
@@ -89,7 +108,9 @@ tr.resList:active{
 <div class = "container">
     <div id = "currentLocation">
         <div><b>Your current location is:</b> {{currentLocationStr}}</div>
-        <a class="btn btn-primary" href="/find-nearest-restaurant">Re-enter</a>
+        <a class="formbutton btn btn-primary" href="/find-nearest-restaurant">Re-enter</a>
+       
+        
     </div>
     
     <form action="" method="POST" id = "cuisine_form">

@@ -48,21 +48,23 @@
     }
 
     .get-directions {
-    padding: 10px 20px;
-    background-color: #5dade2;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-bottom: 20px;
-    text-decoration: none;
-    display: inline-block;
-}
+        padding: 10px 20px;
+        background-color: #5dade2;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-bottom: 20px;
+        text-decoration: none;
+        display: inline-block;
+    }
 
-.get-directions:hover {
-    background-color: #3498db;
-}
+    .get-directions:hover {
+        background-color: #3498db;
+    }
+
+   
 
 </style>
 
@@ -71,8 +73,7 @@
     <h1>{{selected_res.name}}</h1>
     <div>
         <b>Address:</b> {{selected_res.address}} <br>
-        <a class = 'btn btn-primary' href="https://maps.google.com" id=aMap data-lat='{{selected_res.lat}}' data-lon='{{selected_res.lon}}'>Get
-            directions here!</a>
+        <a class="acc get-directions" href="https://maps.google.com" id=aMap data-lat='{{selected_res.lat}}' data-lon='{{selected_res.lon}}'>Get directions here!</a>
         <br>
         <br>
         <div>
@@ -117,8 +118,7 @@
     </div>
 
 
-<a href="https://maps.google.com" id=aCarpark data-lat='{{nearest_carparks.LATITUDE}}' data-lon='{{nearest_carparks.LONGITUDE}}'>Get
-    nearby carparks here!</a>
+    <a class="acc get-directions" href="https://maps.google.com" id=aCarpark data-lat='{{nearest_carparks.LATITUDE}}' data-lon='{{nearest_carparks.LONGITUDE}}'>Get nearby carparks here!</a>
 
 
 </div>
