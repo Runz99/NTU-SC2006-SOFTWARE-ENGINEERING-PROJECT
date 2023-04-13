@@ -97,16 +97,16 @@
   <form method="post">
     {% csrf_token %}
     <div class="form-group">
+      <label for="{{ form.username.id_for_label }}">Username:</label>
+      {{ form.username }}
+    </div>
+    <div class="form-group">
       <label for="{{ form.first_name.id_for_label }}">First Name:</label>
       {{ form.first_name }}
     </div>
     <div class="form-group">
       <label for="{{ form.last_name.id_for_label }}">Last Name:</label>
       {{ form.last_name }}
-    </div>
-    <div class="form-group">
-      <label for="{{ form.username.id_for_label }}">Username:</label>
-      {{ form.username }}
     </div>
     <div class="form-group">
       <label for="{{ form.email.id_for_label }}">Email:</label>
