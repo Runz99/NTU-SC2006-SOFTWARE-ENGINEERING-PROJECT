@@ -118,7 +118,7 @@
     </div>
 
 
-    <a class="acc get-directions" href="https://maps.google.com" id=aCarpark data-lat='{{nearest_carparks.LATITUDE}}' data-lon='{{nearest_carparks.LONGITUDE}}'>Get nearby carparks here!</a>
+    <a class="acc get-directions" id="aCarpark" href = "#">Get nearby carparks here!</a>
 
 
 </div>
@@ -138,23 +138,15 @@
         });
     });
 
-    document.getElementById('aMap').addEventListener('click', function(event){
-        event.preventDefault();
-        var lat = parseFloat(this.dataset.lat);
-        var lon = parseFloat(this.dataset.lon);
-        openDirections(lat,lon)
-    })
+    
 
 
     document.getElementById('aCarpark').addEventListener('click', function(event) {
         event.preventDefault();  // Prevent the default link behavior
         var carparksDiv = document.getElementById('carparks');
-        if (carparksDiv.style.display === 'none') {
-            carparksDiv.style.display = 'block';
-        } else {
-            carparksDiv.style.display = 'none';
-        }
+        carparksDiv.style.display = 'block';
     });
+
 </script>
 
 
