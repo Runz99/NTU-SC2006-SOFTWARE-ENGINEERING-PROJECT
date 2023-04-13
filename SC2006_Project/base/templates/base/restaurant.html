@@ -51,12 +51,13 @@
 <div class="container">
     <h1>{{selected_res.name}}</h1>
     <div>
-        Address: {{selected_res.address}} <br>
-        <a href="https://maps.google.com" id=aMap data-lat='{{selected_res.lat}}' data-lon='{{selected_res.lon}}'>Get
+        <b>Address:</b> {{selected_res.address}} <br>
+        <a class = 'btn btn-primary' href="https://maps.google.com" id=aMap data-lat='{{selected_res.lat}}' data-lon='{{selected_res.lon}}'>Get
             directions here!</a>
         <br>
+        <br>
         <div>
-            Features: 
+            <b>Features: </b>
             <ul>
                 {% for cuisine in cuisineList %}
                 <li>{{ cuisine }}</li>
@@ -77,17 +78,6 @@
         {% endfor %}
     {% else %}
           <div style = "margin: 16px 0px;">There are no reviews for this restaurant at the moment. Be the first one!</div>
-    {% endif %}
-
-    {% if restaurantReview %}
-    {% for review in restaurantReview %}
-        <p>Username: {{review.user_name}}</p>
-        <p>Review: {{review.restaurant_review}}</p>
-        <p>Rating: {{review.restaurant_rating}}/5</p>
-        <p>------------------------------------</p>
-    {% endfor %}
-    {% else %}
-      <div style = "margin: 16px 0px;">There are no reviews for this restaurant at the moment. Be the first one!</div>
     {% endif %}
     
     <a class="acc" href="{% url 'leaveReview' %}">Leave your own reviews here!</a>
