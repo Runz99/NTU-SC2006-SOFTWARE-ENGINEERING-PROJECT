@@ -96,7 +96,6 @@ def searchRestaurant(request):
 # function that takes in user location and saves it, redirect to filter page (find_nearest_restaurant_2)
 def find_nearest_restaurant_1(request):
     location_data = None
-    res = restaurant.objects.all() #get all restaurant objects in database
     user_lats = None
     user_longs = None
 
@@ -122,12 +121,13 @@ def find_nearest_restaurant_1(request):
         request.session['user_longs'] = user_longs
         return redirect('find_nearest_restaurant_2')
     
-    context = {'res': res,'data': location_data}  #pass res into html
+    context = {'data': location_data}  #pass res into html
     return render(request, 'base/find_nearest_restaurant_1.html', context)
 
 
 #===========================================================================================================================================================
 # function that takes in user's cuisine preferences, which is optional (find_nearest_restaurant_3)
+import random
 def find_nearest_restaurant_2(request):
     userLats = request.session['user_lats']
     userLongs =request.session['user_longs']
