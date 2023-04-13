@@ -26,7 +26,6 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 import ast
-import random
 API_KEY = settings.GOOGLE_API_KEY
 
 
@@ -141,6 +140,7 @@ def find_nearest_restaurant_2(request):
     newform = True
     currentLocation = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+userLatsStr+","+userLongsStr+"&key="+API_KEY)
     currentLocationStr = currentLocation.json()['results'][0]['formatted_address']
+    mapMarkersList = []
 
     res = restaurant.objects.all()
     resultRestaurantList = []
@@ -167,6 +167,7 @@ def find_nearest_restaurant_2(request):
             'maxDist': maxDist,
             'restrictionList':restrictionList,
             'cuisineList': cuisineList,
+            'mapsMarkerList': mapMarkersList,
         }
 
     if request.method == "POST":
@@ -183,13 +184,8 @@ def find_nearest_restaurant_2(request):
                 if(len(set(eatTags).intersection(set(cuisineList))) != 0): #meets at least one cuisine
                     # print("cuisine list: "+ str(cuisineList))
                     if(eat.distance <= float(maxDist)): #within max distance
-                        filteredRestaurantList.append({"id": eat.id,
-                                                    "name": eat.name,
-                                                    "lat": eat.lat, 
-                                                    "lon": eat.lon,
-                                                    "distance": eat.distance,
-                                                    "cuisine": ", ".join(eatTags)
-                                                    })
+                        filteredRestaurantList.append(eat)
+                        mapMarkersList.append({"id": eat.id,"name": eat.name, "lat": eat.lat, "lon": eat.lon})
                         # print(eat.distance, maxDist)
 
         context = {
@@ -204,13 +200,8 @@ def find_nearest_restaurant_2(request):
                 'filteredRestaurantList':filteredRestaurantList,
                 'cuisine_options':cuisine_options,
                 'restriction_options':restriction_options,
+                'mapsMarkerList': mapMarkersList,
             }
-        if request.POST.get('action') == 'randomise':
-            if len(filteredRestaurantList) == 0:
-                messages.error(request, 'No restaurants found!')
-            else:
-                chosenRestaurant = random.choice(filteredRestaurantList)
-                return redirect('set_selected_res', res_id=chosenRestaurant.id)
 
     return render(request, 'base/find_nearest_restaurant_2.html', context)
 
@@ -239,6 +230,8 @@ def set_selected_res(request, res_id):
     }
 
     return redirect('restaurant_info')
+
+
 #===========================================================================================================================================================
 
 @login_required(login_url='login')
@@ -472,7 +465,9 @@ def restaurant_info(request):
     nearest_carparks = get_nearest_carparks(selected_res.lat, selected_res.lon, ONEMAP_API_KEY)
     for carpark in nearest_carparks:
         carpark['distance'] = calculate_distance(float(selected_res.lat), float(selected_res.lon), float(carpark['LATITUDE']), float(carpark['LONGITUDE']))
-
+    nearest_carparks.sort(key=lambda carpark: carpark['distance'])  # Sort by distance
+    nearest_carparks = nearest_carparks[:5]  # Get the top 5 nearest carparks
+    
     context = {'selected_res': selected_res, 'restaurantReview': restaurantReview, 'nearest_carparks': nearest_carparks}
     return render(request, 'base/restaurant.html', context)
 
@@ -485,7 +480,8 @@ def get_nearest_carparks(lat, lon, api_key):
         data = response.json()
 
         if data['found'] > 0:
-            nearest_carparks = data['results'][:5]  # Get the top 5 nearest carparks
+            if data['found'] > 0:
+                nearest_carparks = data['results']  # Get all the carparks
             return nearest_carparks
         
         else:
