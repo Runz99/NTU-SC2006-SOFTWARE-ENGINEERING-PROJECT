@@ -46,14 +46,25 @@
         flex-direction: column;
     }
 
-#resultsListContainer{
-    max-width: 1000px;
-    margin-top: 16px;
-}
+
 
 body {
     background-image: url("{% static '\food2_website.jpg' %}");
     background-size: cover;
+}
+
+#resultsListContainer{
+    max-width: 1000px;
+    margin-top: 16px;
+}
+#firstChild{
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+#lastChild{
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
 td a { 
@@ -71,10 +82,6 @@ tr.resList:active{
     scale: 1.01;
 }
 
-ul {
-    list-style-type: none;
-    padding-left: 0px;
-}
 
 
 </style>
@@ -189,19 +196,21 @@ ul {
     </thead>
     {% for list in filteredRestaurantList %}
     <tr class = "resList">
-        <td>
+        <td id = "firstChild">
             <a href="{% url 'set_selected_res' list.id %}">{{list.name}}</a>
         </td>
         <td>
             <a href="{% url 'set_selected_res' list.id %}">{{list.cuisine}}</a>
             
         </td>
-        <td>
+        <td id = "lastChild">
             <a href="{% url 'set_selected_res' list.id %}">TBD</a>
         </td>
     </tr>
     {% endfor %}
 </table>
+{% else %}
+<div>No results found!</div>
 {% endif %}
 
 </div>

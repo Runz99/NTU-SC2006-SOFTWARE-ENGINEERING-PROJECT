@@ -62,7 +62,7 @@
         list-style-type: none;
         margin: 0;
         padding: 0;
-    } */
+    }
 
     ul.searchRestaurant li {
         list-style-type: none;
@@ -71,7 +71,37 @@
         box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
         padding: 20px;
         margin-bottom: 20px;
+    } */
+        
+    #resultsListContainer{
+        max-width: 1000px;
+        margin-top: 16px;
     }
+    #firstChild{
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    #lastChild{
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    td a { 
+    display: block; 
+    padding: 8px;
+    text-decoration: none;
+    color:black
+    }
+
+    tr.resList:hover{
+        scale: 1.03;
+    }
+
+    tr.resList:active{
+        scale: 1.01;
+    }
+
 </style>
 
 <div class="container">
@@ -82,7 +112,7 @@
         <button class="searchBar" type="submit">Search</button>
     </form>
 
-    <ul class="searchRestaurant">
+    <!-- <ul class="searchRestaurant">
         {% for result in results %}
         <li>
             <a href="{% url 'set_selected_res' result.id%}">{{result.name}}</a>
@@ -92,7 +122,33 @@
         {% empty %}
         No results!
         {% endfor %}
-    </ul>
+    </ul> -->
+
+    {% if results %}
+        <div id = "resultsListContainer">
+        <table class = "table table-hover table-sm opacity-100 table-light">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Address</th>
+                </tr>
+            </thead>
+            {% for list in results %}
+            <tr class = "resList">
+                <td id = "firstChild">
+                    <a href="{% url 'set_selected_res' list.id %}">{{list.name}}</a>
+                </td>
+                <td id = "lastChild">
+                    <a href="{% url 'set_selected_res' list.id %}">{{list.address}}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <div>No results found!</div>
+    {% endif %}
+
+
 </div>
 
 

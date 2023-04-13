@@ -207,7 +207,7 @@ def find_nearest_restaurant_2(request):
             }
         if request.POST.get('action') == 'randomise':
             if len(filteredRestaurantList) == 0:
-                messages.error(request, 'No restaurants found!')
+                return 0
             else:
                 chosenRestaurant = random.choice(filteredRestaurantList)
                 return redirect('set_selected_res', res_id=chosenRestaurant['id'])
@@ -476,7 +476,6 @@ def restaurant_info(request):
 
     '''
     
-
     selected_res = request.session.get('selected_res')
     cuisineList = [n.strip() for n in ast.literal_eval(selected_res['cuisine'])]
     #chosen_res = restaurant.objects.get(id = res_id)
