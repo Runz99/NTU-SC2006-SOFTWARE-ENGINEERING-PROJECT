@@ -38,7 +38,8 @@
     }
 
     input[type="text"],
-    input[type="password"] {
+    input[type="password"],
+    input[type="email"] {
         flex: 1;
         padding: 10px;
         border: 1px solid #ccc;
@@ -75,6 +76,16 @@
     input[type="submit"]:hover {
         background-color: #3498db;
     }
+
+    ul{
+        list-style-type: none;
+        padding-left: 0px;
+    }
+
+    .errorlist{
+        border-color: red;
+        color: red;
+    }
 </style>
 
 <div class="container">
@@ -88,6 +99,15 @@
             </div>
         </form>
         <div>Already a member? <a href="{% url 'login' %}">Log In Here!</a></div>
+    </div>
+    <div>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 </div>
 

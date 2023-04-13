@@ -39,7 +39,7 @@
         width: 100%;
         height: 100%;
         margin: auto;
-        padding-top: 6%;
+        padding-top: 3%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -71,8 +71,9 @@ tr.resList:active{
     scale: 1.01;
 }
 
-ul .messages{
+ul {
     list-style-type: none;
+    padding-left: 0px;
 }
 
 
@@ -169,14 +170,14 @@ ul .messages{
 </script>
 
 {% if messages %}
-    <ul class="messages">
+    <ul class="messages" style="margin-top: 32px;">
         {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
         {% endfor %}
     </ul>
 {% endif %}
 
-{% if not newform %}
+{% if filteredRestaurantList %}
 <div id = "resultsListContainer">
 <table class = "table table-hover table-sm opacity-100 table-light">
     <thead>

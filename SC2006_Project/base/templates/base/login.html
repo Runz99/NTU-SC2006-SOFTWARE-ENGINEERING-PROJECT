@@ -81,13 +81,12 @@
         list-style-type: none;
     }
 
+    div .text{
+        margin: 8px 0px;
+        padding: 0px;
+    }
 
 </style>
-
-
-
-
-
 
 
 
@@ -110,17 +109,16 @@
             {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
                 {% endfor %}
             </ul>
             {% endif %}
 
-            <div class="pass"><a href="{% url 'password_reset' %}">Forgot Password?</a></div>
-            <div>New to WGT? <a href="{% url 'create_user' %}">Sign up here!</a></div>
+            <div class = "text"><a href="{% url 'password_reset' %}">Forgot Password?</a></div>
+            <div class = "text">New to WGT? <a href="{% url 'create_user' %}">Sign up here!</a></div>
             <div class="row button">
                 <input type="submit" value="Login">
             </div>
-
         </form>
     </div>
 </div>

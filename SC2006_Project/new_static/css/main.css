@@ -11,6 +11,10 @@
 
 #navMenu li {
     width: 100%;
+    margin-bottom: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /* padding: 10px; */
 }
 
 #navMenu a {
@@ -23,20 +27,14 @@
     padding-bottom: 8px;
 }
 
-#navMenu a:hover {
-    background-color: rgb(78, 168, 105);
+#navMenu li:hover {
+    background-color: #5dade2;
 }
 
-#navMenu a:active {
+#navMenu li:active {
     scale: 1.1;
 }
 
-li {
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-}
 
 button[type="submit"] {
     padding: 10px 20px;
