@@ -231,6 +231,20 @@ def set_selected_res(request, res_id):
 
     return redirect('restaurant_info')
 
+def set_selected_res2(res_id):
+    selected_res = restaurant.objects.get(id=res_id)
+
+    selected_res = {
+        'id': selected_res.id,
+        'name': selected_res.name,
+        'address': selected_res.address,
+        'restaurant_rating' : selected_res.restaurant_rating,
+        'lat': selected_res.lat,
+        'lon': selected_res.lon,
+        'cuisine': selected_res.cuisine
+    }
+
+    return selected_res
 
 #===========================================================================================================================================================
 
@@ -243,11 +257,14 @@ def leaveReviews(request):
         form = reviewForm(request.POST) 
         if form.is_valid():
             addressV = form.cleaned_data['address']
+            selected_res = restaurant.objects.filter(address = addressV)[0].id
+            selected_res = set_selected_res2(selected_res)
             restaurant_reviewV = form.cleaned_data['restaurant_review']
             restaurant_ratingV = form.cleaned_data['restaurant_rating']
             userReview = review(user_name = user_nameV, address = addressV, restaurant_review = restaurant_reviewV, restaurant_rating = restaurant_ratingV)
             userReview.save()
             form = reviewForm()
+            updateReviewRating(selected_res)
             messages.success(request, 'Review submission successful! Thank you!')
             return render(request, 'base/leave_reviews.html', {'review' :form})
         else:
@@ -303,9 +320,12 @@ def edit_review(request, review_id):
         form = reviewForm(request.POST)
         if form.is_valid():
             rev.address = form.cleaned_data['address']
+            selected_res = restaurant.objects.filter(address = rev.address)[0].id
+            selected_res = set_selected_res2(selected_res)
             rev.restaurant_review = form.cleaned_data['restaurant_review']
             rev.restaurant_rating = form.cleaned_data['restaurant_rating']
             rev.save()
+            updateReviewRating(selected_res)
             return redirect('view_my_own_reviews')
     else:
         initial_data = {
@@ -448,6 +468,21 @@ def restaurant_info(request):
     '''
     selected_res = request.session.get('selected_res')
     #chosen_res = restaurant.objects.get(id = res_id)
+
+    update = updateReviewRating(selected_res)
+    selected_res = update[0] #get updated restaurant entry to display
+    restaurantReview = update[1]
+    
+    nearest_carparks = get_nearest_carparks(selected_res.lat, selected_res.lon, ONEMAP_API_KEY)
+    for carpark in nearest_carparks:
+        carpark['distance'] = calculate_distance(float(selected_res.lat), float(selected_res.lon), float(carpark['LATITUDE']), float(carpark['LONGITUDE']))
+    nearest_carparks.sort(key=lambda carpark: carpark['distance'])  # Sort by distance
+    nearest_carparks = nearest_carparks[:5]  # Get the top 5 nearest carparks
+    
+    context = {'selected_res': selected_res, 'restaurantReview': restaurantReview, 'nearest_carparks': nearest_carparks}
+    return render(request, 'base/restaurant.html', context)
+
+def updateReviewRating(selected_res):
     restaurantReview = review.objects.filter(address = selected_res.get('id'))
     sum = 0
     for reviews in restaurantReview:
@@ -460,16 +495,10 @@ def restaurant_info(request):
     update = restaurant.objects.get(address = selected_res.get('address')) #obtain correct restaurant in database
     update.restaurant_rating = average #update it
     update.save()
-    selected_res = update #get updated restaurant entry to display
-    
-    nearest_carparks = get_nearest_carparks(selected_res.lat, selected_res.lon, ONEMAP_API_KEY)
-    for carpark in nearest_carparks:
-        carpark['distance'] = calculate_distance(float(selected_res.lat), float(selected_res.lon), float(carpark['LATITUDE']), float(carpark['LONGITUDE']))
-    nearest_carparks.sort(key=lambda carpark: carpark['distance'])  # Sort by distance
-    nearest_carparks = nearest_carparks[:5]  # Get the top 5 nearest carparks
-    
-    context = {'selected_res': selected_res, 'restaurantReview': restaurantReview, 'nearest_carparks': nearest_carparks}
-    return render(request, 'base/restaurant.html', context)
+    toReturn = []
+    toReturn.append(update)
+    toReturn.append(restaurantReview)
+    return toReturn
 
 def get_nearest_carparks(lat, lon, api_key):
     try:
