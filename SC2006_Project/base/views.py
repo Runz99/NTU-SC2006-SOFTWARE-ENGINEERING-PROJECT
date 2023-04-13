@@ -88,7 +88,7 @@ def searchRestaurant(request):
 
     if request.GET.get('search'): #get restaurant search
         search = request.GET.get('search')
-        results = restaurant.objects.filter(name__contains=search)
+        results = restaurant.objects.filter(address__contains=search)
     context = {'res': res, 'results' : results}  #pass res into html
     return render(request, 'base/search_restaurant.html', context)
 
@@ -137,6 +137,7 @@ def find_nearest_restaurant_2(request):
     cuisineList = []
     restrictionList = []
     maxDist = 0
+    minRating = 0
     newform = True
     currentLocation = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+userLatsStr+","+userLongsStr+"&key="+API_KEY)
     currentLocationStr = currentLocation.json()['results'][0]['formatted_address']
@@ -167,6 +168,7 @@ def find_nearest_restaurant_2(request):
             'maxDist': maxDist,
             'restrictionList':restrictionList,
             'cuisineList': cuisineList,
+            'minRating': minRating
         }
 
     if request.method == "POST":
@@ -174,6 +176,7 @@ def find_nearest_restaurant_2(request):
         cuisineList = request.POST.getlist('cuisines')
         restrictionList = request.POST.getlist('restrictions')
         maxDist = request.POST.get('distance')
+        minRating = request.POST.get('minRating')
         newform = False
         for eat in sortedRestaurantList:
             eatTags = [n.strip() for n in ast.literal_eval(eat.cuisine)]
@@ -182,14 +185,17 @@ def find_nearest_restaurant_2(request):
                 # print("restriction list: "+ str(restrictionList))
                 if(len(set(eatTags).intersection(set(cuisineList))) != 0): #meets at least one cuisine
                     # print("cuisine list: "+ str(cuisineList))
-                    if(eat.distance <= float(maxDist)): #within max distance
-                         filteredRestaurantList.append({"id": eat.id,
-                                                    "name": eat.name,
-                                                    "lat": eat.lat, 
-                                                    "lon": eat.lon,
-                                                    "distance": eat.distance,
-                                                    "cuisine": ", ".join(eatTags)
-                                                    })
+                    if(float(eat.distance) <= float(maxDist)): #within max distance
+                         currentRating = updateReviewRating(set_selected_res2(eat.id))[2]
+                         if currentRating >= float(minRating):
+                            filteredRestaurantList.append({"id": eat.id,
+                                                        "name": eat.name,
+                                                        "lat": eat.lat, 
+                                                        "lon": eat.lon,
+                                                        "distance": eat.distance,
+                                                        "cuisine": ", ".join(eatTags),
+                                                        "rating": currentRating,
+                                                        })
                         # print(eat.distance, maxDist)
 
         context = {
@@ -204,6 +210,7 @@ def find_nearest_restaurant_2(request):
                 'filteredRestaurantList':filteredRestaurantList,
                 'cuisine_options':cuisine_options,
                 'restriction_options':restriction_options,
+                'minRating': minRating
             }
         if request.POST.get('action') == 'randomise':
             if len(filteredRestaurantList) == 0:
@@ -517,6 +524,7 @@ def updateReviewRating(selected_res):
     toReturn = []
     toReturn.append(update)
     toReturn.append(restaurantReview)
+    toReturn.append(average)
     return toReturn
 
 def get_nearest_carparks(lat, lon, api_key):

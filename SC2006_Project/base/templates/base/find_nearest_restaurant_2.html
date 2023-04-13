@@ -119,16 +119,28 @@ tr.resList:active{
             <option value="{{restriction}}" {% if restriction in restrictionList%} selected {% endif %}>{{restriction}}</option>
         {% endfor %}
         </select>
-    
-        <label for="distance_dropdown" class = "form_label">Find restaurants within:</label>
-        <select name="distance" id = "distance_dropdown">
-            <option value="0.5"{% if maxDist == "0.5" %} selected {% endif %}>500m</option>
-            <option value="1" {% if newform or maxDist == "1" %} selected {% endif %}>1km</option>
-            <option value="2"{% if maxDist == "2" %} selected {% endif %}>2km</option>
-            <option value="3"{% if maxDist == "3" %} selected {% endif %}>3km</option>
-            <option value="4"{% if maxDist == "4" %} selected {% endif %}>4km</option>
-            <option value="5"{% if maxDist == "5" %} selected {% endif %}>5km</option>
-        </select>
+        <div>
+            <b>Find restaurants within:</b>
+            <select name="distance" id = "distance_dropdown" class="form-select">
+                <option value="0.5"{% if maxDist == "0.5" %} selected {% endif %}>500m</option>
+                <option value="1" {% if newform or maxDist == "1" %} selected {% endif %}>1km</option>
+                <option value="2"{% if maxDist == "2" %} selected {% endif %}>2km</option>
+                <option value="3"{% if maxDist == "3" %} selected {% endif %}>3km</option>
+                <option value="4"{% if maxDist == "4" %} selected {% endif %}>4km</option>
+                <option value="5"{% if maxDist == "5" %} selected {% endif %}>5km</option>
+            </select></div>
+        <div>
+            <b>Minimum review rating:</b>
+            <select name = "minRating" id = "minRating_dropdown" class="form-select">
+                <option value="0"{% if newform or minRating == "0" %} selected {% endif %}>0</option>
+                <option value="1"{% if minRating == "1" %} selected {% endif %}>1</option>
+                <option value="2"{% if minRating == "2" %} selected {% endif %}>2</option>
+                <option value="3"{% if minRating == "3" %} selected {% endif %}>3</option>
+                <option value="4"{% if minRating == "4" %} selected {% endif %}>4</option>
+                <option value="4.5"{% if minRating == "4.5" %} selected {% endif %}>4.5</option>
+                <option value="5"{% if minRating == "5" %} selected {% endif %}>5</option>
+            </select>
+        </div>
         <div>
             <button type="Submit" name = "action" value = "submit" class = "formbutton btn btn-primary">Search</button>
             <button type="Submit" name = "action" value = "randomise" class = "formbutton btn btn-primary">I'm feeling lucky</button>
@@ -201,16 +213,15 @@ tr.resList:active{
         </td>
         <td>
             <a href="{% url 'set_selected_res' list.id %}">{{list.cuisine}}</a>
-            
         </td>
         <td id = "lastChild">
-            <a href="{% url 'set_selected_res' list.id %}">TBD</a>
+            <a href="{% url 'set_selected_res' list.id %}">{{list.rating}}</a>
         </td>
     </tr>
     {% endfor %}
 </table>
 {% else %}
-<div>No results found!</div>
+<div style = "margin-top: 16px;"><h3>No results found. Please update your filters and try again.</h3></div>
 {% endif %}
 
 </div>
