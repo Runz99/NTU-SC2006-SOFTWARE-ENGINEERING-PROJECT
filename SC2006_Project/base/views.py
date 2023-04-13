@@ -93,7 +93,7 @@ def searchRestaurant(request):
     return render(request, 'base/search_restaurant.html', context)
 
 #===========================================================================================================================================================
-# function that takes in user location and saves it, redirect to filter page (find_nearest_restaurant_2)
+# function that takes in user location and saves it, redirect to filter page (find_nearest_restaurant_1)
 def find_nearest_restaurant_1(request):
     location_data = None
     user_lats = None
@@ -126,7 +126,7 @@ def find_nearest_restaurant_1(request):
 
 
 #===========================================================================================================================================================
-# function that takes in user's cuisine preferences, which is optional (find_nearest_restaurant_3)
+# function that takes in user's cuisine preferences, which is optional (find_nearest_restaurant_2)
 import random
 def find_nearest_restaurant_2(request):
     userLats = request.session['user_lats']
@@ -475,6 +475,8 @@ def restaurant_info(request):
     returns: renders restaurant.html with specified restaurant's info and restaurant's reviews
 
     '''
+    cuisineList = [n.strip() for n in ast.literal_eval(selected_res['cuisine'])]
+
     selected_res = request.session.get('selected_res')
     cuisineList = [n.strip() for n in ast.literal_eval(selected_res['cuisine'])]
 
@@ -489,11 +491,13 @@ def restaurant_info(request):
     nearest_carparks.sort(key=lambda carpark: carpark['distance'])  # Sort by distance
     nearest_carparks = nearest_carparks[:5]  # Get the top 5 nearest carparks
     
+
     context = {'selected_res': selected_res, 
                'restaurantReview': restaurantReview, 
                'nearest_carparks': nearest_carparks,
                'cuisineList': cuisineList}
     
+
     return render(request, 'base/restaurant.html', context)
 
 def updateReviewRating(selected_res):
