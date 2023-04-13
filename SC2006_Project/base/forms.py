@@ -21,9 +21,9 @@ class reviewForm(forms.Form):
     '''
     address = forms.ModelChoiceField(
             queryset=restaurant.objects.all().order_by("address"),
-            label = "Restaurant Name"
+            label = "Restaurant Name",
             )
-    restaurant_review = forms.CharField(label = "Review Text", max_length=100000 ,widget=forms.TextInput(attrs={'size': '100'}))
+    restaurant_review = forms.CharField(label = "Review Text", max_length=100000 ,widget=forms.Textarea(attrs={'rows': 5, 'cols': 40}))
     restaurant_rating = forms.CharField(label = "Rating", widget=forms.Select(choices=ratingChoice))
     
 class CustomUserCreationForm(UserCreationForm):
