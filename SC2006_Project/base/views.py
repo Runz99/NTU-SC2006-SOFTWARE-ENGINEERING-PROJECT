@@ -141,7 +141,6 @@ def find_nearest_restaurant_2(request):
     newform = True
     currentLocation = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+userLatsStr+","+userLongsStr+"&key="+API_KEY)
     currentLocationStr = currentLocation.json()['results'][0]['formatted_address']
-    mapMarkersList = []
 
     res = restaurant.objects.all()
     resultRestaurantList = []
@@ -168,7 +167,6 @@ def find_nearest_restaurant_2(request):
             'maxDist': maxDist,
             'restrictionList':restrictionList,
             'cuisineList': cuisineList,
-            'mapsMarkerList': mapMarkersList,
         }
 
     if request.method == "POST":
@@ -185,8 +183,13 @@ def find_nearest_restaurant_2(request):
                 if(len(set(eatTags).intersection(set(cuisineList))) != 0): #meets at least one cuisine
                     # print("cuisine list: "+ str(cuisineList))
                     if(eat.distance <= float(maxDist)): #within max distance
-                        filteredRestaurantList.append(eat)
-                        mapMarkersList.append({"id": eat.id,"name": eat.name, "lat": eat.lat, "lon": eat.lon})
+                        filteredRestaurantList.append({"id": eat.id,
+                                                    "name": eat.name,
+                                                    "lat": eat.lat, 
+                                                    "lon": eat.lon,
+                                                    "distance": eat.distance,
+                                                    "cuisine": ", ".join(eatTags)
+                                                    })
                         # print(eat.distance, maxDist)
 
         context = {
@@ -201,7 +204,6 @@ def find_nearest_restaurant_2(request):
                 'filteredRestaurantList':filteredRestaurantList,
                 'cuisine_options':cuisine_options,
                 'restriction_options':restriction_options,
-                'mapsMarkerList': mapMarkersList,
             }
         if request.POST.get('action') == 'randomise':
             if len(filteredRestaurantList) == 0:
@@ -237,8 +239,6 @@ def set_selected_res(request, res_id):
     }
 
     return redirect('restaurant_info')
-
-
 #===========================================================================================================================================================
 
 @login_required(login_url='login')

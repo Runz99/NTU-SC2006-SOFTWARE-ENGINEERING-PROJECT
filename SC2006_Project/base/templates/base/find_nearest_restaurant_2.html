@@ -126,13 +126,13 @@ ul .messages{
             <button type="Submit" name = "action" value = "randomise" class = "formbutton btn btn-primary">I'm feeling lucky</button>
         </div>
     </form>
-    <div id= "map">{{mapsMarkerList|json_script:"mapsMarkerList"}}</div>
+    <div id= "map">{{filteredRestaurantList|json_script:"filteredRestaurantList"}}</div>
 
 
 
 <script type = "module">
-    var mapsMarkerList = JSON.parse(document.getElementById("mapsMarkerList").textContent);
-    console.log(mapsMarkerList)
+    var filteredRestaurantList = JSON.parse(document.getElementById("filteredRestaurantList").textContent);
+    // console.log(filteredRestaurantList)
 
     const myLatLng = { lat: parseFloat("{{userLats}}"), lng: parseFloat("{{userLongs}}") };
     var map = new google.maps.Map(document.getElementById("map"), {
@@ -150,8 +150,8 @@ ul .messages{
 
     var marker, i;
 
-    for(i = 0; i < mapsMarkerList.length; i++){
-        const LatLng = {lat: parseFloat(mapsMarkerList[i].lat), lng: parseFloat(mapsMarkerList[i].lon)}
+    for(i = 0; i < filteredRestaurantList.length; i++){
+        const LatLng = {lat: parseFloat(filteredRestaurantList[i].lat), lng: parseFloat(filteredRestaurantList[i].lon)}
         console.log(LatLng)
         marker = new google.maps.Marker({
             position: LatLng,
