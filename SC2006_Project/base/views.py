@@ -210,7 +210,7 @@ def find_nearest_restaurant_2(request):
                 messages.error(request, 'No restaurants found!')
             else:
                 chosenRestaurant = random.choice(filteredRestaurantList)
-                return redirect('set_selected_res', res_id=chosenRestaurant.id)
+                return redirect('set_selected_res', res_id=chosenRestaurant['id'])
 
     return render(request, 'base/find_nearest_restaurant_2.html', context)
 
@@ -454,7 +454,8 @@ def restaurant_info(request):
 
     '''
     selected_res = request.session.get('selected_res')
-    #chosen_res = restaurant.objects.get(id = res_id)
+    cuisineList = [n.strip() for n in ast.literal_eval(selected_res['cuisine'])]
+
     restaurantReview = review.objects.filter(address = selected_res.get('id'))
     sum = 0
     for reviews in restaurantReview:
@@ -473,7 +474,11 @@ def restaurant_info(request):
     for carpark in nearest_carparks:
         carpark['distance'] = calculate_distance(float(selected_res.lat), float(selected_res.lon), float(carpark['LATITUDE']), float(carpark['LONGITUDE']))
 
-    context = {'selected_res': selected_res, 'restaurantReview': restaurantReview, 'nearest_carparks': nearest_carparks}
+    context = {'selected_res': selected_res, 
+               'restaurantReview': restaurantReview, 
+               'nearest_carparks': nearest_carparks,
+               'cuisineList': cuisineList}
+    
     return render(request, 'base/restaurant.html', context)
 
 def get_nearest_carparks(lat, lon, api_key):
