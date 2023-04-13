@@ -46,6 +46,24 @@
     #carparks {
         display: none;
     }
+
+    .get-directions {
+    padding: 10px 20px;
+    background-color: #5dade2;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 20px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.get-directions:hover {
+    background-color: #3498db;
+}
+
 </style>
 
 
@@ -84,34 +102,43 @@
     <a class="acc" href="{% url 'leaveReview' %}">Leave your own reviews here!</a>
     <hr>
     <h3>Need some help? We'll show you how to get there!</h3>
-        <h3>Nearest Carparks</h3>
+    <h3>Nearest Carparks</h3>
+    <div id="carparks">
         {% for carpark in nearest_carparks %}
-            <p>Type: {{carpark.BUILDING}}</p>
-            <p>Address: {{carpark.ADDRESS}}</p>
-            <p>Distance: {{carpark.distance|floatformat:2}} km</p>
-            <button class="get-directions" data-lat="{{carpark.LATITUDE}}" data-lon="{{carpark.LONGITUDE}}">Get directions to this carpark</button>
+            <div class="carpark">
+                <p>Type: {{carpark.name}}</p>
+                <p>Address: {{carpark.vicinity}}</p>
+                <p>Distance: {{carpark.distance|floatformat:2}} km</p>
+                <a class="get-directions" href="#" data-lat="{{carpark.geometry.location.lat}}" data-lon="{{carpark.geometry.location.lng}}">Get directions to this carpark</a>
+            </div>
         {% endfor %}
 
-    <p></p>
-    <a href="https://maps.google.com" id=aCarpark data-lat='{{carpark.LATITUDE}}' data-lon='{{carpark.LONGITUDE}}'>Get
-        nearby carparks here!</a>
+
+
+    </div>
+
+
+<a href="https://maps.google.com" id=aCarpark data-lat='{{nearest_carparks.LATITUDE}}' data-lon='{{nearest_carparks.LONGITUDE}}'>Get
+    nearby carparks here!</a>
 
 
 </div>
 
 <script>
     function openDirections(lat, lon) {
-        var url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+        var url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&key={{API_KEY}}`;
         window.open(url, '_blank');
     }
 
-    document.querySelectorAll('.get-directions').forEach(function(button) {
-        button.addEventListener('click', function() {
-            var lat = parseFloat(this.dataset.lat);
-            var lon = parseFloat(this.dataset.lon);
-            openDirections(lat, lon);
+    document.querySelectorAll('.get-directions').forEach(function(link) {
+    link.addEventListener('click', function(event) {
+        event.preventDefault();
+        var lat = parseFloat(this.dataset.lat);
+        var lon = parseFloat(this.dataset.lon);
+        openDirections(lat, lon);
         });
     });
+
 
     document.getElementById('aCarpark').addEventListener('click', function(event) {
         event.preventDefault();  // Prevent the default link behavior

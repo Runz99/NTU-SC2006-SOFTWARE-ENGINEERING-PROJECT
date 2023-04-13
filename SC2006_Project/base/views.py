@@ -465,6 +465,7 @@ def add_restaurant(request):
 import requests
 import json
 
+
 ONEMAP_API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEwMTgxLCJ1c2VyX2lkIjoxMDE4MSwiZW1haWwiOiJ4dWp1bnpoZTAxMTNAb3V0bG9vay5jb20iLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE2ODEzMjA2ODIsImV4cCI6MTY4MTc1MjY4MiwibmJmIjoxNjgxMzIwNjgyLCJqdGkiOiIyNzY2MmZjNGMxNDE0NWVkYjA0MmUzYjcxYzYyYzdjNiJ9.3KvTDjidt7hNxb4hD-JmYvcY3I1eOYsL5zMfD59OGqY'
 
 def restaurant_info(request):
@@ -484,9 +485,10 @@ def restaurant_info(request):
     selected_res = update[0] #get updated restaurant entry to display
     restaurantReview = update[1]
     
-    nearest_carparks = get_nearest_carparks(selected_res.lat, selected_res.lon, ONEMAP_API_KEY)
+    nearest_carparks = get_nearest_carparks(selected_res.lat, selected_res.lon, API_KEY)
     for carpark in nearest_carparks:
-        carpark['distance'] = calculate_distance(float(selected_res.lat), float(selected_res.lon), float(carpark['LATITUDE']), float(carpark['LONGITUDE']))
+        carpark['distance'] = calculate_distance(float(selected_res.lat), float(selected_res.lon), float(carpark['geometry']['location']['lat']), float(carpark['geometry']['location']['lng']))
+
     nearest_carparks.sort(key=lambda carpark: carpark['distance'])  # Sort by distance
     nearest_carparks = nearest_carparks[:5]  # Get the top 5 nearest carparks
     
@@ -519,26 +521,24 @@ def updateReviewRating(selected_res):
 
 def get_nearest_carparks(lat, lon, api_key):
     try:
-        base_url = "https://developers.onemap.sg/commonapi/search?"
-        query = f"searchVal=Car%20Park&returnGeom=Y&getAddrDetails=Y&pageNum=1"
-        url = f"{base_url}{query}&lat={lat}&lng={lon}&APIKey={api_key}"
+        base_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
+        query = f"location={lat},{lon}&radius=1000&type=parking&key={api_key}"
+        url = f"{base_url}{query}"
         response = requests.get(url)
         data = response.json()
 
-        if data['found'] > 0:
-            if data['found'] > 0:
-                nearest_carparks = data['results']  # Get all the carparks
+        if data['status'] == 'OK':
+            nearest_carparks = data['results']  # Get all the carparks
             return nearest_carparks
-        
         else:
             return []
-
     except json.JSONDecodeError:
-        print("Error parsing JSON response from OneMap API")
+        print("Error parsing JSON response from Google Maps API")
         return []
     except Exception as e:
         print("Error occurred while fetching nearest carparks:", e)
         return []
+
 
 
 
