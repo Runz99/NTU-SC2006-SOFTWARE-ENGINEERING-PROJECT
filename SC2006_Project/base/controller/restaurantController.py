@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 import requests
 import ast
-API_KEY = SC2006_Project.settings.GOOGLE_API_KEY
+from .reviewController import updateReviewRating
+from .carparkController import get_nearest_carparks
+from .findNearbyRestaurantController import calculate_distance
+from SC2006_Project.settings import GOOGLE_API_KEY as GOOGLE_API_KEY
+API_KEY = GOOGLE_API_KEY
 
 def restaurant_info(request):
     '''

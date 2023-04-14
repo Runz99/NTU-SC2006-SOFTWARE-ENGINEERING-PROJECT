@@ -3,6 +3,11 @@ from base.models import restaurant
 import requests
 import urllib.parse
 import math
+from SC2006_Project.settings import GOOGLE_API_KEY as GOOGLE_API_KEY
+API_KEY = GOOGLE_API_KEY
+import ast
+from .reviewController import updateReviewRating
+from .setSelectedResHelper import *
 
 #===========================================================================================================================================================
 # function that takes in user location and saves it, redirect to filter page (find_nearest_restaurant_1)
@@ -144,32 +149,3 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     distance = R * c  # Distance in km
     return distance
 
-def set_selected_res(request, res_id):
-    selected_res = restaurant.objects.get(id=res_id)
-
-    request.session['selected_res'] = {
-        'id': selected_res.id,
-        'name': selected_res.name,
-        'address': selected_res.address,
-        'restaurant_rating' : selected_res.restaurant_rating,
-        'lat': selected_res.lat,
-        'lon': selected_res.lon,
-        'cuisine': selected_res.cuisine
-    }
-
-    return redirect('restaurant_info')
-
-def set_selected_res2(res_id):
-    selected_res = restaurant.objects.get(id=res_id)
-
-    selected_res = {
-        'id': selected_res.id,
-        'name': selected_res.name,
-        'address': selected_res.address,
-        'restaurant_rating' : selected_res.restaurant_rating,
-        'lat': selected_res.lat,
-        'lon': selected_res.lon,
-        'cuisine': selected_res.cuisine
-    }
-
-    return selected_res

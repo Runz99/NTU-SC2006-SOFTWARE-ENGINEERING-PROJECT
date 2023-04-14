@@ -1,6 +1,7 @@
 import json
 import requests
-API_KEY = SC2006_Project.settings.GOOGLE_API_KEY
+from SC2006_Project.settings import GOOGLE_API_KEY as GOOGLE_API_KEY
+API_KEY = GOOGLE_API_KEY
 
 def get_nearest_carparks(lat, lon, api_key):
     try:
