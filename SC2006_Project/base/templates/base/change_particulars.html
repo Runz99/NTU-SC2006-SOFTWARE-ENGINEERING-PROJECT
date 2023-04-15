@@ -41,7 +41,7 @@
   }
 
   button[type="submit"],
-  .btn1 {
+  .btn {
     padding: 10px 20px;
     background-color: #5dade2;
     border: none;
@@ -54,7 +54,7 @@
   }
 
   button[type="submit"]:hover,
-  .btn1:hover {
+  .btn:hover {
     background-color: #3498db;
   }
 
@@ -138,11 +138,11 @@
       <label for="{{ form.email.id_for_label }}">Email:</label>
       {{ form.email }}
     </div>
-    <button type="submit" class="btn1">Update</button>
+    <button type="submit" class="btn">Update</button>
   </form>
   <hr>
   <a href="{% url 'change_password' %}">
-    <button class="btn1">Change Password</button>
+    <button class="btn">Change Password</button>
   </a>
 </div>
 {% endblock %}    

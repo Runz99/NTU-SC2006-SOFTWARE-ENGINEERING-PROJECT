@@ -34,7 +34,7 @@
 </style>
 <div class="container">
   <h1>Restaurants</h1>
-  <a href="{% url 'add_restaurant' %} " class="btn btn-primary">Add New Restaurant</a>
+  <a href="{% url 'add_restaurant' %}">Add New Restaurant</a>
   <table>
     <thead>
       <tr>
@@ -49,7 +49,7 @@
         <td>{{ restaurant.name }}</td>
         <td>{{ restaurant.address }}</td>
         <td>
-          <a href="{% url 'delete_restaurant' restaurant.id %}" class="btn btn-danger" >Delete</a>
+          <a href="{% url 'delete_restaurant' restaurant.id %}">Delete</a>
         </td>
       </tr>
       {% endfor %}

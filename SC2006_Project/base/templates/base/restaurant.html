@@ -47,19 +47,6 @@
         display: none;
     }
 
-    .get-directions1 {
-        padding: 10px 20px;
-        background-color: #5dade2;
-        border: none;
-        border-radius: 5px;
-        color: white;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        margin-bottom: 20px;
-        text-decoration: none;
-        display: inline-block;
-    }
-
     .get-directions {
         padding: 10px 20px;
         background-color: #5dade2;
@@ -98,8 +85,6 @@
             </ul>
         </div>
         <b>Average Rating:</b> {{selected_res.restaurant_rating}}/5
-        <hr>
-
     </div>
 
 
@@ -133,7 +118,7 @@
     </div>
 
 
-    <a class="acc get-directions1" href="https://maps.google.com" id=aCarpark data-lat='{{nearest_carparks.LATITUDE}}' data-lon='{{nearest_carparks.LONGITUDE}}'>View carparks</a>
+    <a class="acc get-directions" href="https://maps.google.com" id=aCarpark data-lat='{{nearest_carparks.LATITUDE}}' data-lon='{{nearest_carparks.LONGITUDE}}'>Get nearby carparks here!</a>
 
 
 </div>
