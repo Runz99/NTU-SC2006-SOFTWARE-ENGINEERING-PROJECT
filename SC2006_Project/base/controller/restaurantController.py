@@ -38,4 +38,4 @@ def restaurant_info(request):
                'cuisineList': cuisineList}
     
 
-    return render(request, 'base/restaurant.html', context)
+    return render(request, 'base/restaurantUI/restaurant.html', context)

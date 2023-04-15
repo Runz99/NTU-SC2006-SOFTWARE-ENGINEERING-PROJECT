@@ -9,7 +9,7 @@ from base.forms import *
 @user_passes_test(lambda u: u.is_staff, login_url='login')
 def list_restaurants(request):
     restaurants = restaurant.objects.all()
-    return render(request, 'base/list_restaurants.html', {'restaurants': restaurants})
+    return render(request, 'base/adminRestaurantUI/list_restaurants.html', {'restaurants': restaurants})
 
 @user_passes_test(lambda u: u.is_staff, login_url='login')
 def delete_restaurant(request, restaurant_id):
@@ -19,7 +19,7 @@ def delete_restaurant(request, restaurant_id):
         messages.success(request, 'Restaurant deleted successfully!')
         return redirect('list_restaurants')
     context = {'restaurant': restaurant_instance}
-    return render(request, 'base/delete_restaurant.html', context)
+    return render(request, 'base/adminRestaurantUI/delete_restaurant.html', context)
 
 @user_passes_test(lambda u: u.is_staff, login_url='login')
 def add_restaurant(request):
@@ -31,4 +31,4 @@ def add_restaurant(request):
             return redirect('list_restaurants')
     else:
         form = RestaurantForm()
-    return render(request, 'base/add_restaurant.html', {'form': form})
+    return render(request, 'base/adminRestaurantUI/add_restaurant.html', {'form': form})

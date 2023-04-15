@@ -39,7 +39,7 @@ def find_nearest_restaurant_1(request):
         return redirect('find_nearest_restaurant_2')
     
     context = {'data': location_data}  #pass res into html
-    return render(request, 'base/find_nearest_restaurant_1.html', context)
+    return render(request, 'base/findNearbyRestaurantsUI/find_nearest_restaurant_1.html', context)
 
 
 #===========================================================================================================================================================
@@ -136,7 +136,7 @@ def find_nearest_restaurant_2(request):
                 chosenRestaurant = random.choice(filteredRestaurantList)
                 return redirect('set_selected_res', res_id=chosenRestaurant['id'])
 
-    return render(request, 'base/find_nearest_restaurant_2.html', context)
+    return render(request, 'base/findNearbyRestaurantsUI/find_nearest_restaurant_2.html', context)
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371  # Radius of the earth in km

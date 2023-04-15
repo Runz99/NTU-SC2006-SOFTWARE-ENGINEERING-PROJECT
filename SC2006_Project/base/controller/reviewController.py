@@ -28,17 +28,17 @@ def leaveReviews(request):
             form = reviewForm()
             updateReviewRating(selected_res)
             messages.success(request, 'Review submission successful! Thank you!')
-            return render(request, 'base/leave_reviews.html', {'review' :form})
+            return render(request, 'base/reviewUI/leave_reviews.html', {'review' :form})
         else:
             form = reviewForm()  
-            return render(request, 'base/leave_reviews.html', {'review' :form})
-    return render(request, 'base/leave_reviews.html', {'review' :form})
+            return render(request, 'base/reviewUI/leave_reviews.html', {'review' :form})
+    return render(request, 'base/reviewUI/leave_reviews.html', {'review' :form})
 
 @login_required(login_url='login')
 def view_my_own_reviews(request):
     user_reviews = review.objects.filter(user_name=request.user.username)
     context = {'user_reviews': user_reviews}
-    return render(request, 'base/view_my_own_reviews.html', context)
+    return render(request, 'base/accountUI/view_my_own_reviews.html', context)
 
 # User can edit or delete their own reviews
 @login_required(login_url='login')
@@ -63,7 +63,7 @@ def edit_review(request, review_id):
         }
         form = reviewForm(initial=initial_data)
 
-    return render(request, 'base/edit_review.html', {'form': form})
+    return render(request, 'base/reviewUI/edit_review.html', {'form': form})
 
 @login_required(login_url='login')
 def delete_review(request, review_id):
@@ -74,7 +74,7 @@ def delete_review(request, review_id):
         return redirect('view_my_own_reviews')
     
     context = {'review': review_instance}
-    return render(request, 'base/delete_review.html', context)
+    return render(request, 'base/reviewUI/delete_review.html', context)
 
 def updateReviewRating(selected_res):
     restaurantReview = review.objects.filter(address = selected_res.get('id'))

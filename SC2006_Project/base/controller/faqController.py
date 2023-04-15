@@ -9,4 +9,4 @@ def faq(request):
 
     '''
     context = {}
-    return render(request, 'base/faq.html',context)
+    return render(request, 'base/faqUI/faq.html',context)

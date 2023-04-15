@@ -9,4 +9,4 @@ def contact(request):
 
     '''
     context = {}
-    return render(request, 'base/contact.html',context)
+    return render(request, 'base/contactUI/contact.html',context)

@@ -9,4 +9,4 @@ def searchRestaurant(request):
         search = request.GET.get('search')
         results = restaurant.objects.filter(address__contains=search)
     context = {'res': res, 'results' : results}  #pass res into html
-    return render(request, 'base/search_restaurant.html', context)
+    return render(request, 'base/searchUI/search_restaurant.html', context)

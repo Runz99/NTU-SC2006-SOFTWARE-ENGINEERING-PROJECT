@@ -17,4 +17,4 @@ def createUser(request):
         else:
             messages.error(request, "an error has occured during registration")
     context = {'form':form}
-    return render(request, 'base/create_user.html', context)
+    return render(request, 'base/signUpUI/create_user.html', context)

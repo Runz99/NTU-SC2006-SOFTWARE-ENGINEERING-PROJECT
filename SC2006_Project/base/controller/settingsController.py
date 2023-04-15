@@ -21,7 +21,7 @@ def change_particulars(request):
         form = EditProfileForm(instance=request.user)
 
     context = {'form': form}
-    return render(request, 'base/change_particulars.html', context)
+    return render(request, 'base/settingsUI/change_particulars.html', context)
 
 @login_required(login_url='login')
 def change_password(request):
@@ -39,6 +39,6 @@ def change_password(request):
         password_form = CustomPasswordChangeForm(request.user)
 
     context = {'password_form': password_form}
-    return render(request, 'base/change_password.html', context)
+    return render(request, 'base/settingsUI/change_password.html', context)
 
 
