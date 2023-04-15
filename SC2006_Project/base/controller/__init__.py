@@ -10,5 +10,8 @@ from .restaurantController import *
 from .reviewController import *
 from .searchController import *
 from .settingsController import *
+from .adminRestaurantController import *
+from .accountController import *
+from .adminUserController import *
 from .signupController import *
 
