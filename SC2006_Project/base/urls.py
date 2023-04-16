@@ -35,4 +35,5 @@ urlpatterns = [
     path('delete_restaurant/<int:restaurant_id>/', controller.delete_restaurant, name='delete_restaurant'),
     path('add_restaurant/', controller.add_restaurant, name='add_restaurant'),
     path('change_password/', controller.change_password, name='change_password'),
+    path('accounts/login/', controller.loginPage, name='login'),
 ]
