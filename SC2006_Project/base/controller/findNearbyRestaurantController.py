@@ -104,7 +104,7 @@ def find_nearest_restaurant_2(request):
                     # print("cuisine list: "+ str(cuisineList))
                     if(float(eat.distance) <= float(maxDist)): #within max distance
                          currentRating = updateReviewRating(set_selected_res2(eat.id))[2]
-                         if currentRating >= float(minRating):
+                         if float(currentRating) >= float(minRating):
                             filteredRestaurantList.append({"id": eat.id,
                                                         "name": eat.name,
                                                         "lat": eat.lat, 
